@@ -1,14 +1,23 @@
 import { Close, Setting, Clear } from '@icon-park/react';
 import { invoke } from '@tauri-apps/api/tauri';
 import { register } from '@tauri-apps/api/globalShortcut';
-import { useEffect } from 'react';
+import { readText } from '@tauri-apps/api/clipboard';
+import { useEffect, useState } from 'react';
 
 const App = () => {
+  const [history, setHistory] = useState<string[]>([]);
+  
   const onClose = () => {
     const { appWindow } = require('@tauri-apps/api/window');
 
     // don't close, just hide
     appWindow.hide();
+  };
+
+  const getHistory = async () => {
+    const history = await invoke("get_history") as string[];
+
+    setHistory(history);
   };
 
   const onShortcut = async () => {
@@ -20,10 +29,14 @@ const App = () => {
 
     appWindow.show();
     appWindow.setAlwaysOnTop(true);
+
+    getHistory();
   }
 
   useEffect(() => {
-    register("CONTROL+X", onShortcut);
+    getHistory();
+
+    register("CONTROL+SPACE", onShortcut);
   }, []);
 
   return (
