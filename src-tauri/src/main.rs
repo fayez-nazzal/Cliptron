@@ -143,7 +143,7 @@ fn main() {
     });
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![get_mouse_position, get_history, delete_from_history])
+        .invoke_handler(tauri::generate_handler![get_mouse_position, get_history, delete_from_history, recopy_at_index])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
