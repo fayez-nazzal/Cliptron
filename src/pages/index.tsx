@@ -1,37 +1,48 @@
-import { Close, Setting, Clear, Delete, DownloadComputer } from '@icon-park/react';
-import { invoke } from '@tauri-apps/api/tauri';
-import { register } from '@tauri-apps/api/globalShortcut';
-import { readText } from '@tauri-apps/api/clipboard';
-import { useEffect, useState } from 'react';
+import {
+  Close,
+  Setting,
+  Clear,
+  Delete,
+  DownloadComputer,
+  Copy,
+} from "@icon-park/react";
+import { invoke } from "@tauri-apps/api/tauri";
+import { register } from "@tauri-apps/api/globalShortcut";
+import { useEffect, useState } from "react";
 
 const App = () => {
   const [history, setHistory] = useState<string[]>([]);
-  
+
   const onClose = () => {
-    const { appWindow } = require('@tauri-apps/api/window');
+    const { appWindow } = require("@tauri-apps/api/window");
 
     // don't close, just hide
     appWindow.hide();
   };
 
   const getHistory = async () => {
-    const history = await invoke("get_history") as string[];
+    const history = (await invoke("get_history")) as string[];
 
     setHistory(history);
   };
 
   const onShortcut = async () => {
-    const mouse_position = await invoke("get_mouse_position") as [number, number];
+    const mouse_position = (await invoke("get_mouse_position")) as [
+      number,
+      number
+    ];
 
-    const { appWindow, LogicalPosition } = require('@tauri-apps/api/window');
+    const { appWindow, LogicalPosition } = require("@tauri-apps/api/window");
 
-    appWindow.setPosition(new LogicalPosition(mouse_position[0], mouse_position[1]));
+    appWindow.setPosition(
+      new LogicalPosition(mouse_position[0], mouse_position[1])
+    );
 
     appWindow.show();
     appWindow.setAlwaysOnTop(true);
 
     getHistory();
-  }
+  };
 
   useEffect(() => {
     getHistory();
@@ -42,31 +53,35 @@ const App = () => {
   const recopy_at_index = async (index: number) => {
     invoke("recopy_at_index", { index });
 
-    const { appWindow } = require('@tauri-apps/api/window');
+    const { appWindow } = require("@tauri-apps/api/window");
 
     appWindow.hide();
-  }
+  };
 
   const clear_history = async () => {
     await invoke("clear_history");
 
     getHistory();
-  }
+  };
 
   const delete_from_history = async (index: number) => {
     await invoke("delete_from_history", { index });
 
     getHistory();
-  }
+  };
 
   return (
-    <div className="w-full h-8">
-      <div data-tauri-drag-region className="flex flex-row-reverse p-2 border-b-2" id="titlebar-close">
-        <button className='text-[#444] hover:text-red-500' onClick={onClose}>
+    <div className="w-full h-screen relative overflow-hidden">
+      <div
+        data-tauri-drag-region
+        className="flex flex-row-reverse p-2 border-b-2 h-9 w-full absolute"
+        id="titlebar-close"
+      >
+        <button className="text-[#444] hover:text-red-500" onClick={onClose}>
           <Close theme="outline" size="18" fill="currentColor" />
         </button>
 
-        <button className='mr-1 text-[#444] hover:text-blue-500'>
+        <button className="mr-1 text-[#444] hover:text-blue-500">
           <Setting theme="outline" size="18" fill="currentColor" />
         </button>
 
@@ -74,36 +89,63 @@ const App = () => {
           {history.length} copied items
         </div>
 
-        <button className='mr-1 text-[#444] hover:text-green-500' onClick={clear_history}>
+        <button
+          className="mr-1 text-[#444] hover:text-green-500"
+          onClick={clear_history}
+        >
           <Clear theme="outline" size="18" fill="currentColor" />
         </button>
       </div>
 
-      {history.map((item, index) => (
-        <div className='grid grid-cols-7 border-b-2 p-2 group hover:bg-gray-100'>
-          <button key={index} className="col-span-6 flex-1 text-left" onClick={() => recopy_at_index(index)}>
-            {item.startsWith("data:image") ? (
-              <img src={item} className="flex-1 p-2 border-2 border-gray-300 rounded-md" />
-            ) : (
-              <div className='flex-1 text-ellipsis break-words'>
-                {item}
-              </div>
-            )}
-          </button>
-            
-          <div className='col-span-1 flex flex-col justify-center gap-2 pl-2'>
-            <button className="p-1 flex justify-center border-2 text-[#444] rounded hover:text-blue-500 hover:bg-blue-200">
-              <DownloadComputer theme="outline" size="16" fill="currentColor" />
-            </button>
+      <div className="h-full pt-9">
+        <div className="overflow-auto h-full">
+          {history.map((item, index) => (
+            <div className="grid grid-cols-5 border-b-2 p-2 group hover:bg-gray-50">
+              <button
+                key={index}
+                className="col-span-4 flex-1 text-left"
+                onClick={() => recopy_at_index(index)}
+              >
+                {item.startsWith("data:image") ? (
+                  <img
+                    src={item}
+                    className="flex-1 p-2 border-2 border-gray-300 rounded-md"
+                  />
+                ) : (
+                  <div className="flex-1 text-ellipsis break-words">{item}</div>
+                )}
+              </button>
 
-            <button className="p-1 flex justify-center border-2 text-[#444] rounded hover:text-red-500 hover:bg-red-200" onClick={() => delete_from_history(index)}>
-              <Delete theme="outline" size="16" fill="currentColor" />
-            </button>
-          </div>
+              <div className="col-span-1 flex flex-col border-l-2 border-gray-100 justify-center items-center gap-2 pl-2">
+              <button className="p-1 w-10 h-10 flex justify-center items-center border-2 text-[#444] rounded hover:text-blue-500 hover:bg-blue-200" onClick={() => recopy_at_index(index)}>
+                  <Copy
+                    theme="outline"
+                    size="19"
+                    fill="currentColor"
+                  />
+                </button>
+
+                <button className="p-1 w-10 h-10 flex justify-center items-center border-2 text-[#444] rounded hover:text-green-500 hover:bg-green-200">
+                  <DownloadComputer
+                    theme="outline"
+                    size="19"
+                    fill="currentColor"
+                  />
+                </button>
+
+                <button
+                  className="p-1 w-10 h-10 flex justify-center items-center border-2 text-[#444] rounded hover:text-red-500 hover:bg-red-200"
+                  onClick={() => delete_from_history(index)}
+                >
+                  <Delete theme="outline" size="19" fill="currentColor" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
-}
+};
 
 export default App;
