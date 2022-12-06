@@ -37,8 +37,6 @@ fn add_to_history(text: &String, image: Option<ImageData<'static>>) {
         image: image.clone(),
     };
 
-    println!("Text added to history: {}", text);
-
     unsafe {
         CLIPBOARD_HISTORY.insert(0, clipboard_content);
     }
@@ -126,10 +124,6 @@ fn recopy_at_index(index: usize) {
         if copied_content.image.is_some() {
             CLIPBOARD.set_image(copied_content.image.clone().unwrap());
         } else {
-            println!("Recopying text: {}", copied_content.text.clone());
-
-            println!("index === IGNORE_INDEX: {}", index == IGNORE_INDEX as usize);
-
             CLIPBOARD.set_text(copied_content.text.clone());
         }
     }
@@ -137,7 +131,7 @@ fn recopy_at_index(index: usize) {
 
 #[tauri::command]
 fn get_mouse_position() -> (i32, i32) {
-    let cursor_location: (i32, i32) = Enigo::new().mouse_location();
+    let cursor_location: (i32, i32) = Enigo::mouse_location();
 
     cursor_location
 }

@@ -1,0 +1,1 @@
+for linux enigo = { git = "https://github.com/Prunkton/enigo", branch = "master" }
