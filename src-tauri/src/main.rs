@@ -95,7 +95,7 @@ impl ClipboardHandler for Handler {
     }
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn get_history() -> Vec<String> {
     unsafe {
         return CLIPBOARD_HISTORY.iter().map(|x| x.text.clone()).collect();
@@ -116,7 +116,7 @@ fn clear_history() {
     }
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn recopy_at_index(index: usize) {
     unsafe {
         let copied_content = &CLIPBOARD_HISTORY[index];
