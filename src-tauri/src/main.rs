@@ -15,7 +15,7 @@ use std::io;
 use std::io::Cursor;
 use std::thread;
 use tauri::Manager;
-use tauri::SystemTray;
+use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 struct ClipboardContent {
     text: String,
@@ -146,14 +146,31 @@ fn main() {
         }
     });
 
-    let tray = SystemTray::new();
+    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+
+    let tray_menu = SystemTrayMenu::new().add_item(quit);
+
+    let tray = SystemTray::new().with_menu(tray_menu);
 
     tauri::Builder::default()
+        .setup(|app| Ok(()))
         .system_tray(tray)
-        .setup(|app| {
-            let main_window = app.get_window("main").unwrap();
-
-            Ok(())
+        .on_system_tray_event(|app, event| match event {
+            SystemTrayEvent::LeftClick {
+                position: _,
+                size: _,
+                ..
+            } => {
+                let main_window = app.get_window("main").unwrap();
+                main_window.show().unwrap();
+            }
+            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+                "quit" => {
+                    app.exit(0);
+                }
+                _ => {}
+            },
+            _ => {}
         })
         .invoke_handler(tauri::generate_handler![
             get_mouse_position,
