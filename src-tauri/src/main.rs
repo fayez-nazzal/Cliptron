@@ -3,17 +3,18 @@
     windows_subsystem = "windows"
 )]
 
-use std::io;
-use std::io::Cursor;
+use arboard::Clipboard;
 use arboard::ImageData;
+use clipboard_master::{CallbackResult, ClipboardHandler, Master};
+use once_cell::unsync::Lazy;
+use core::time;
 use enigo::Enigo;
 use enigo::MouseControllable;
 use image::DynamicImage;
 use image::ImageOutputFormat;
-use core::time;
-use clipboard_master::{ClipboardHandler, CallbackResult, Master};
-use std::{thread};
-use arboard::Clipboard;
+use std::io;
+use std::io::Cursor;
+use std::thread;
 
 struct ClipboardContent {
     text: String,
@@ -25,19 +26,21 @@ const KEY_BETWEEN_DELAY: time::Duration = time::Duration::from_millis(10);
 const KEY_RELEASE_DELAY: time::Duration = time::Duration::from_millis(20);
 static mut IGNORE_INDEX: i32 = -1;
 
+static mut CLIPBOARD: once_cell::unsync::Lazy<arboard::Clipboard> = Lazy::new(|| {
+    let clipboard = Clipboard::new().unwrap();
+    clipboard
+});
+
 fn add_to_history(text: &String, image: Option<ImageData<'static>>) {
     let clipboard_content = ClipboardContent {
         text: text.clone(),
         image: image.clone(),
     };
-    
+
+    println!("Text added to history: {}", text);
+
     unsafe {
-        let last_copied_text = CLIPBOARD_HISTORY.first();
-        
-        if last_copied_text.is_none() || (!last_copied_text.unwrap().text.eq(text) && (IGNORE_INDEX == -1 || 
-            !text.eq(&CLIPBOARD_HISTORY[IGNORE_INDEX as usize].text))) {
-            CLIPBOARD_HISTORY.insert(0, clipboard_content);
-        }
+        CLIPBOARD_HISTORY.insert(0, clipboard_content);
     }
 }
 
@@ -56,7 +59,9 @@ fn imagedata_to_image(imagedata: &ImageData) -> DynamicImage {
 
     let image_buffer: Vec<u8> = image_bytes.into_iter().map(|x| *x).collect();
 
-    let image = DynamicImage::ImageRgba8(image::RgbaImage::from_raw(image_width, image_height, image_buffer).unwrap());
+    let image = DynamicImage::ImageRgba8(
+        image::RgbaImage::from_raw(image_width, image_height, image_buffer).unwrap(),
+    );
 
     image
 }
@@ -65,21 +70,22 @@ struct Handler;
 
 impl ClipboardHandler for Handler {
     fn on_clipboard_change(&mut self) -> CallbackResult {
-        let mut clipboard = Clipboard::new().unwrap();
-        let copied_text_result = clipboard.get_text();
-        let copied_image_result = clipboard.get_image();
+        unsafe {
+            let copied_text_result = CLIPBOARD.get_text();
+            let copied_image_result = CLIPBOARD.get_image();
 
-        let mut copied_text = String::new();
-        
-        if copied_image_result.is_ok() {
-            let copied_image = copied_image_result.unwrap();
-            let image = imagedata_to_image(&copied_image);
-            let image_base64 = image_to_base64(&image);
+            let mut copied_text = String::new();
 
-            add_to_history(&image_base64, Some(copied_image));
-        } else if copied_text_result.is_ok() {
-            copied_text = copied_text_result.unwrap();
-            add_to_history(&copied_text, None);
+            if copied_image_result.is_ok() {
+                let copied_image = copied_image_result.unwrap();
+                let image = imagedata_to_image(&copied_image);
+                let image_base64 = image_to_base64(&image);
+
+                add_to_history(&image_base64, Some(copied_image));
+            } else if copied_text_result.is_ok() {
+                copied_text = copied_text_result.unwrap();
+                add_to_history(&copied_text, None);
+            }
         }
 
         CallbackResult::Next
@@ -98,8 +104,6 @@ fn get_history() -> Vec<String> {
     }
 }
 
-
-
 #[tauri::command]
 fn delete_from_history(index: usize) {
     unsafe {
@@ -110,18 +114,16 @@ fn delete_from_history(index: usize) {
 #[tauri::command]
 fn recopy_at_index(index: usize) {
     unsafe {
-        IGNORE_INDEX = index as i32;
-    }
-
-    let mut clipboard = Clipboard::new().unwrap();
-
-    unsafe {
         let copied_content = &CLIPBOARD_HISTORY[index];
-        
+
         if copied_content.image.is_some() {
-            clipboard.set_image(copied_content.image.clone().unwrap());
+            CLIPBOARD.set_image(copied_content.image.clone().unwrap());
         } else {
-            clipboard.set_text(copied_content.text.clone());
+            println!("Recopying text: {}", copied_content.text.clone());
+
+            println!("index === IGNORE_INDEX: {}", index == IGNORE_INDEX as usize);
+
+            CLIPBOARD.set_text(copied_content.text.clone());
         }
     }
 }
@@ -143,7 +145,12 @@ fn main() {
     });
 
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![get_mouse_position, get_history, delete_from_history, recopy_at_index])
+        .invoke_handler(tauri::generate_handler![
+            get_mouse_position,
+            get_history,
+            delete_from_history,
+            recopy_at_index
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -312,6 +312,7 @@ dependencies = [
  "clipboard-master",
  "enigo",
  "image",
+ "once_cell",
  "serde",
  "serde_json",
  "tauri",
