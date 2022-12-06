@@ -80,23 +80,23 @@ const App = () => {
       </div>
 
       {history.map((item, index) => (
-        <div className='flex border-b-2 p-2 group hover:bg-gray-100'>
-          <button key={index} className="w-full text-left" onClick={() => recopy_at_index(index)}>
+        <div className='grid grid-cols-7 border-b-2 p-2 group hover:bg-gray-100'>
+          <button key={index} className="col-span-6 flex-1 text-left" onClick={() => recopy_at_index(index)}>
             {item.startsWith("data:image") ? (
-              <img src={item} className="w-full p-2 border-2 border-gray-300 rounded-md" />
+              <img src={item} className="flex-1 p-2 border-2 border-gray-300 rounded-md" />
             ) : (
-              <div>
+              <div className='flex-1 text-ellipsis break-words'>
                 {item}
               </div>
             )}
           </button>
             
-          <div className='flex flex-col gap-2'>
-            <button className="p-1 border-2 text-[#444] rounded hover:text-blue-500 hover:bg-blue-200">
+          <div className='col-span-1 flex flex-col justify-center gap-2 pl-2'>
+            <button className="p-1 flex justify-center border-2 text-[#444] rounded hover:text-blue-500 hover:bg-blue-200">
               <DownloadComputer theme="outline" size="16" fill="currentColor" />
             </button>
 
-            <button className="p-1 border-2 text-[#444] rounded hover:text-red-500 hover:bg-red-200" onClick={() => delete_from_history(index)}>
+            <button className="p-1 flex justify-center border-2 text-[#444] rounded hover:text-red-500 hover:bg-red-200" onClick={() => delete_from_history(index)}>
               <Delete theme="outline" size="16" fill="currentColor" />
             </button>
           </div>
