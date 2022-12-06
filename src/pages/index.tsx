@@ -29,19 +29,19 @@ const App = () => {
   return (
     <div className="w-full h-8">
       <div data-tauri-drag-region className="flex flex-row-reverse p-2 border-b-2" id="titlebar-close">
-        <button className='text-[#444] hover:text-red-500' onClick={onClose}>
+        <button className='text-[#444] hover:text-red-500 pointer-events-none' onClick={onClose}>
           <Close theme="outline" size="18" fill="currentColor" />
         </button>
 
-        <button className='mr-1 text-[#444] hover:text-blue-500'>
+        <button className='mr-1 text-[#444] hover:text-blue-500 pointer-events-none'>
           <Setting theme="outline" size="18" fill="currentColor" />
         </button>
 
-        <div className="mr-auto text-sm">
+        <div className="mr-auto text-sm pointer-events-none">
           200 copied items
         </div>
 
-        <button className='mr-1 text-[#444] hover:text-green-500'>
+        <button className='mr-1 text-[#444] hover:text-green-500 pointer-events-none'>
           <Clear theme="outline" size="18" fill="currentColor" />
         </button>
       </div>
