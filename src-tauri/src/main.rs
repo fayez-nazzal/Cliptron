@@ -6,15 +6,16 @@
 use arboard::Clipboard;
 use arboard::ImageData;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
-use once_cell::unsync::Lazy;
 use core::time;
 use enigo::Enigo;
-use enigo::MouseControllable;
 use image::DynamicImage;
 use image::ImageOutputFormat;
+use once_cell::unsync::Lazy;
 use std::io;
 use std::io::Cursor;
 use std::thread;
+use tauri::Manager;
+use tauri::SystemTray;
 
 struct ClipboardContent {
     text: String,
@@ -145,7 +146,15 @@ fn main() {
         }
     });
 
+    let tray = SystemTray::new();
+
     tauri::Builder::default()
+        .system_tray(tray)
+        .setup(|app| {
+            let main_window = app.get_window("main").unwrap();
+
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             get_mouse_position,
             get_history,
@@ -153,6 +162,12 @@ fn main() {
             clear_history,
             recopy_at_index,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|_app_handle, event| match event {
+            tauri::RunEvent::ExitRequested { api, .. } => {
+                api.prevent_exit();
+            }
+            _ => {}
+        });
 }
