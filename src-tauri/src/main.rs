@@ -112,6 +112,13 @@ fn delete_from_history(index: usize) {
 }
 
 #[tauri::command]
+fn clear_history() {
+    unsafe {
+        CLIPBOARD_HISTORY.clear();
+    }
+}
+
+#[tauri::command]
 fn recopy_at_index(index: usize) {
     unsafe {
         let copied_content = &CLIPBOARD_HISTORY[index];
@@ -149,7 +156,8 @@ fn main() {
             get_mouse_position,
             get_history,
             delete_from_history,
-            recopy_at_index
+            clear_history,
+            recopy_at_index,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
