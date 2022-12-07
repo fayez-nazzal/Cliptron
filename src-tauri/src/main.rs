@@ -24,9 +24,6 @@ struct ClipboardContent {
 }
 
 static mut CLIPBOARD_HISTORY: Vec<ClipboardContent> = Vec::new();
-const KEY_BETWEEN_DELAY: time::Duration = time::Duration::from_millis(10);
-const KEY_RELEASE_DELAY: time::Duration = time::Duration::from_millis(20);
-static mut IGNORE_INDEX: i32 = -1;
 
 static mut CLIPBOARD: once_cell::unsync::Lazy<arboard::Clipboard> = Lazy::new(|| {
     let clipboard = Clipboard::new().unwrap();

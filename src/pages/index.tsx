@@ -5,8 +5,6 @@ import {
   Delete,
   DownloadComputer,
   Copy,
-  Pin,
-  DropDownList,
 } from "@icon-park/react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { register } from "@tauri-apps/api/globalShortcut";
@@ -50,7 +48,7 @@ const App = () => {
 
     register("CONTROL+SPACE", onShortcut);
 
-    listen("copied", () => {
+    listen("history", () => {
       getHistory();
     });
   }, []);
@@ -117,13 +115,8 @@ const App = () => {
                 )}
               </button>
 
-              <div className="h-25 duration-500 transition-all">
-                <div className=" top-1/2 -translate-y-1/2 right-1 flex w-20  group-hover:opacity-100 opacity-0 duration-500 transition-all absolute bg-gray-50 flex-col justify-center items-center">
-                  <button className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md">
-                    <Pin theme="outline" size="18" fill="currentColor" />
-                    <div className="ml-2 text-xs">Pin</div>
-                  </button>
-
+              <div className="h-20 duration-500 transition-all">
+                <div className=" top-1/2 -translate-y-1/2 right-[0.5rem] flex w-20  group-hover:opacity-100 opacity-0 duration-500 transition-all absolute rounded-md bg-gray-50/90 flex-col justify-center items-center">
                   <button className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md">
                     <Copy theme="outline" size="18" fill="currentColor" />
                     <div className="ml-2 text-xs">Copy</div>
