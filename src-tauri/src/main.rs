@@ -14,6 +14,7 @@ use once_cell::unsync::Lazy;
 use std::io;
 use std::io::Cursor;
 use std::thread;
+use tauri::AppHandle;
 use tauri::Manager;
 use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
@@ -32,6 +33,27 @@ static mut CLIPBOARD: once_cell::unsync::Lazy<arboard::Clipboard> = Lazy::new(||
     clipboard
 });
 
+struct GlobalAppHandle {
+    handle: Option<AppHandle>,
+}
+
+static mut GLOBAL_APP_HANDLE: once_cell::unsync::Lazy<GlobalAppHandle> =
+    Lazy::new(|| GlobalAppHandle { handle: None });
+
+#[derive(Clone, serde::Serialize)]
+struct HistoryEventPayload {}
+
+fn emit_history_event() {
+    unsafe {
+        GLOBAL_APP_HANDLE
+            .handle
+            .as_ref()
+            .unwrap()
+            .emit_all("history", HistoryEventPayload {})
+            .unwrap();
+    }
+}
+
 fn add_to_history(text: &String, image: Option<ImageData<'static>>) {
     let clipboard_content = ClipboardContent {
         text: text.clone(),
@@ -40,6 +62,8 @@ fn add_to_history(text: &String, image: Option<ImageData<'static>>) {
 
     unsafe {
         CLIPBOARD_HISTORY.insert(0, clipboard_content);
+
+        emit_history_event()
     }
 }
 
@@ -107,6 +131,8 @@ fn get_history() -> Vec<String> {
 fn delete_from_history(index: usize) {
     unsafe {
         CLIPBOARD_HISTORY.remove(index);
+
+        emit_history_event()
     }
 }
 
@@ -114,6 +140,8 @@ fn delete_from_history(index: usize) {
 fn clear_history() {
     unsafe {
         CLIPBOARD_HISTORY.clear();
+
+        emit_history_event()
     }
 }
 
@@ -153,7 +181,13 @@ fn main() {
     let tray = SystemTray::new().with_menu(tray_menu);
 
     tauri::Builder::default()
-        .setup(|app| Ok(()))
+        .setup(|app| {
+            let handle = app.handle();
+            unsafe {
+                GLOBAL_APP_HANDLE.handle = Some(handle);
+            }
+            Ok(())
+        })
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::LeftClick {

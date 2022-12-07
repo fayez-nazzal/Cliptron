@@ -11,11 +11,10 @@ import {
 import { invoke } from "@tauri-apps/api/tauri";
 import { register } from "@tauri-apps/api/globalShortcut";
 import { useEffect, useState } from "react";
+import { listen } from '@tauri-apps/api/event'
 
 const App = () => {
   const [history, setHistory] = useState<string[]>([]);
-  // for showing a popover
-  const [itemId, setItemId] = useState<number>(0);
 
   const onClose = () => {
     const { appWindow } = require("@tauri-apps/api/window");
@@ -44,14 +43,16 @@ const App = () => {
 
     appWindow.show();
     appWindow.setAlwaysOnTop(true);
-
-    getHistory();
   };
 
   useEffect(() => {
     getHistory();
 
     register("CONTROL+SPACE", onShortcut);
+
+    listen("copied", () => {
+      getHistory();
+    });
   }, []);
 
   const recopy_at_index = async (index: number) => {
@@ -64,14 +65,10 @@ const App = () => {
 
   const clear_history = async () => {
     await invoke("clear_history");
-
-    getHistory();
   };
 
   const delete_from_history = async (index: number) => {
     await invoke("delete_from_history", { index });
-
-    getHistory();
   };
 
   return (
