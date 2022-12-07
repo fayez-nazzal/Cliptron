@@ -24,6 +24,9 @@
       },
       "clipboard": {
         "all": true
+      },
+      "dialog": {
+        "save": true
       }
     },
     "bundle": {

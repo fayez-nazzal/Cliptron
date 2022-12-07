@@ -10,6 +10,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { register } from "@tauri-apps/api/globalShortcut";
 import { useEffect, useState } from "react";
 import { listen } from '@tauri-apps/api/event'
+import { save } from '@tauri-apps/api/dialog';
 
 const App = () => {
   const [history, setHistory] = useState<string[]>([]);
@@ -69,6 +70,23 @@ const App = () => {
     await invoke("delete_from_history", { index });
   };
 
+  const save_to_file = async (index: number) => {
+    const is_image = history[index].startsWith("data:image");
+
+    const filePath = await save({
+      filters: [{
+        name: is_image ? 'Image' : "Text",
+        extensions: is_image ? ['png', 'jpeg'] : ['txt']
+      }]
+    });
+
+    if (filePath) {
+      await invoke("save_to_file", { index, path: filePath });
+    } else {
+      console.log('User cancelled save dialog');
+    }
+  };
+
   return (
     <div className="w-full h-screen relative overflow-hidden">
       <div
@@ -122,7 +140,7 @@ const App = () => {
                     <div className="ml-2 text-xs">Copy</div>
                   </button>
 
-                  <button className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md">
+                  <button className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md" onClick={() => save_to_file(index)}>
                     <DownloadComputer
                       theme="outline"
                       size="18"

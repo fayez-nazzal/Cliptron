@@ -7,6 +7,8 @@ use arboard::Clipboard;
 use arboard::ImageData;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use core::time;
+use std::fs::File;
+use std::io::Write;
 use enigo::Enigo;
 use image::DynamicImage;
 use image::ImageOutputFormat;
@@ -162,6 +164,22 @@ fn get_mouse_position() -> (i32, i32) {
     cursor_location
 }
 
+#[tauri::command]
+fn save_to_file(index: usize, path: String) {
+    unsafe {
+        let copied_content = &CLIPBOARD_HISTORY[index];
+
+        if copied_content.image.is_some() {
+            let image = imagedata_to_image(&copied_content.image.clone().unwrap());
+            image.save(path).unwrap();
+        } else {
+            println!("Saving to file: {}", path);
+            let mut file = File::create(path).unwrap();
+            file.write_all(copied_content.text.as_bytes()).unwrap();
+        }
+    }
+}
+
 fn main() {
     thread::spawn(|| {
         let result = Master::new(Handler).run();
@@ -209,6 +227,7 @@ fn main() {
             delete_from_history,
             clear_history,
             recopy_at_index,
+            save_to_file
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
