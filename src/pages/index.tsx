@@ -5,6 +5,8 @@ import {
   Delete,
   DownloadComputer,
   Copy,
+  Pin,
+  DropDownList,
 } from "@icon-park/react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { register } from "@tauri-apps/api/globalShortcut";
@@ -12,6 +14,8 @@ import { useEffect, useState } from "react";
 
 const App = () => {
   const [history, setHistory] = useState<string[]>([]);
+  // for showing a popover
+  const [itemId, setItemId] = useState<number>(0);
 
   const onClose = () => {
     const { appWindow } = require("@tauri-apps/api/window");
@@ -74,15 +78,15 @@ const App = () => {
     <div className="w-full h-screen relative overflow-hidden">
       <div
         data-tauri-drag-region
-        className="flex flex-row-reverse p-2 border-b-2 h-9 w-full absolute"
+        className="flex flex-row-reverse p-2 border-b-2 h-10 w-full absolute"
         id="titlebar-close"
       >
         <button className="text-[#444] hover:text-red-500" onClick={onClose}>
-          <Close theme="outline" size="18" fill="currentColor" />
+          <Close theme="outline" size="20" fill="currentColor" />
         </button>
 
         <button className="mr-1 text-[#444] hover:text-blue-500">
-          <Setting theme="outline" size="18" fill="currentColor" />
+          <Setting theme="outline" size="20" fill="currentColor" />
         </button>
 
         <div className="mr-auto text-sm pointer-events-none">
@@ -93,17 +97,17 @@ const App = () => {
           className="mr-1 text-[#444] hover:text-green-500"
           onClick={clear_history}
         >
-          <Clear theme="outline" size="18" fill="currentColor" />
+          <Clear theme="outline" size="20" fill="currentColor" />
         </button>
       </div>
 
-      <div className="h-full pt-9">
+      <div className="h-full pt-10">
         <div className="overflow-auto h-full">
           {history.map((item, index) => (
-            <div className="grid grid-cols-5 border-b-2 p-2 group hover:bg-gray-50">
+            <div className="relative flex border-b-2 p-2 group transition-all hover:bg-gray-50">
               <button
                 key={index}
-                className="col-span-4 flex-1 text-left"
+                className="flex-1 text-left max-h-44 overflow-auto"
                 onClick={() => recopy_at_index(index)}
               >
                 {item.startsWith("data:image") ? (
@@ -116,29 +120,35 @@ const App = () => {
                 )}
               </button>
 
-              <div className="col-span-1 flex flex-col border-l-2 border-gray-100 justify-center items-center gap-2 pl-2">
-              <button className="p-1 w-10 h-10 flex justify-center items-center border-2 text-[#444] rounded hover:text-blue-500 hover:bg-blue-200" onClick={() => recopy_at_index(index)}>
-                  <Copy
-                    theme="outline"
-                    size="19"
-                    fill="currentColor"
-                  />
-                </button>
+              <div className="h-25 duration-500 transition-all">
+                <div className=" top-1/2 -translate-y-1/2 right-1 flex w-20  group-hover:opacity-100 opacity-0 duration-500 transition-all absolute bg-gray-50 flex-col justify-center items-center">
+                  <button className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md">
+                    <Pin theme="outline" size="18" fill="currentColor" />
+                    <div className="ml-2 text-xs">Pin</div>
+                  </button>
 
-                <button className="p-1 w-10 h-10 flex justify-center items-center border-2 text-[#444] rounded hover:text-green-500 hover:bg-green-200">
-                  <DownloadComputer
-                    theme="outline"
-                    size="19"
-                    fill="currentColor"
-                  />
-                </button>
+                  <button className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md">
+                    <Copy theme="outline" size="18" fill="currentColor" />
+                    <div className="ml-2 text-xs">Copy</div>
+                  </button>
 
-                <button
-                  className="p-1 w-10 h-10 flex justify-center items-center border-2 text-[#444] rounded hover:text-red-500 hover:bg-red-200"
-                  onClick={() => delete_from_history(index)}
-                >
-                  <Delete theme="outline" size="19" fill="currentColor" />
-                </button>
+                  <button className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md">
+                    <DownloadComputer
+                      theme="outline"
+                      size="18"
+                      fill="currentColor"
+                    />
+                    <div className="ml-2 text-xs">Save</div>
+                  </button>
+
+                  <button
+                    className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md"
+                    onClick={() => delete_from_history(index)}
+                  >
+                    <Delete theme="outline" size="18" fill="currentColor" />
+                    <div className="ml-2 text-xs">Delete</div>
+                  </button>
+                </div>
               </div>
             </div>
           ))}
