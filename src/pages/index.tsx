@@ -72,7 +72,7 @@ const App = () => {
                 />
                 <ActionButton
                   icon={DownloadComputer}
-                  label="Download"
+                  label="Save"
                   onClick={() => recopy_at_index(index)}
                 />
                 <ActionButton
