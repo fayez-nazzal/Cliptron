@@ -12,7 +12,13 @@ const SetupPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const Step = steps[currentStep];
 
-  return <Step onNext={() => setCurrentStep(currentStep + 1)} />;
+  const onNext = () => {
+    if (currentStep + 1 < steps.length) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  return <Step onNext={onNext} />;
 };
 
 export default SetupPage;

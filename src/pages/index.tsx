@@ -7,10 +7,11 @@ import { useAtom } from "jotai";
 import { get_history, recopy_at_index } from "../actions/tauri";
 import { ActionButton } from "../components/ActionButton/index";
 import { useRouter } from "next/router";
-
+import { shortcutAtom } from "@atoms/shortcut";
 
 const App = () => {
   const [history, setHistory] = useAtom(historyAtom);
+  const [shortcut] = useAtom(shortcutAtom);
   const router = useRouter();
 
   const updateHistory = async () => {
@@ -26,7 +27,9 @@ const App = () => {
       updateHistory();
     });
 
-    router.push("/setup");
+    if (!shortcut) {
+      router.push("/setup");
+    }
   }, []);
 
   return (
