@@ -45,9 +45,8 @@ export const save_to_file = async (index: number, is_image: boolean) => {
 
   if (filePath) {
     await invoke("save_to_file", { index, path: filePath });
+    hide_window();
   }
-
-  hide_window();
 };
 
 export const on_shortcut = async () => {
