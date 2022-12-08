@@ -8,12 +8,14 @@ import {
 } from "@icon-park/react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { register } from "@tauri-apps/api/globalShortcut";
-import { useEffect, useState } from "react";
-import { listen } from '@tauri-apps/api/event'
-import { save } from '@tauri-apps/api/dialog';
+import { useEffect } from "react";
+import { listen } from "@tauri-apps/api/event";
+import { save } from "@tauri-apps/api/dialog";
+import { historyAtom } from "../atoms/history";
+import { useAtom } from "jotai";
 
 const App = () => {
-  const [history, setHistory] = useState<string[]>([]);
+  const [history, setHistory] = useAtom(historyAtom);
 
   const onClose = () => {
     const { appWindow } = require("@tauri-apps/api/window");
@@ -58,7 +60,7 @@ const App = () => {
     const { appWindow } = require("@tauri-apps/api/window");
 
     appWindow.hide();
-  }
+  };
 
   const recopy_at_index = async (index: number) => {
     invoke("recopy_at_index", { index });
@@ -84,9 +86,9 @@ const App = () => {
         extensions: ["png", "jpg", "jpeg", "gif", "webp", "bmp", "ico"],
       });
     }
-    
+
     const filePath = await save({
-      filters
+      filters,
     });
 
     if (filePath) {
@@ -144,12 +146,18 @@ const App = () => {
 
               <div className="h-20 duration-500 transition-all">
                 <div className=" top-1/2 -translate-y-1/2 right-[0.5rem] flex w-20  group-hover:opacity-100 opacity-0 duration-500 transition-all absolute rounded-md bg-gray-50/90 flex-col justify-center items-center">
-                  <button className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md" onClick={() => recopy_at_index(index)}>
+                  <button
+                    className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md"
+                    onClick={() => recopy_at_index(index)}
+                  >
                     <Copy theme="outline" size="18" fill="currentColor" />
                     <div className="ml-2 text-xs">Copy</div>
                   </button>
 
-                  <button className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md" onClick={() => save_to_file(index)}>
+                  <button
+                    className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md"
+                    onClick={() => save_to_file(index)}
+                  >
                     <DownloadComputer
                       theme="outline"
                       size="18"
