@@ -79,7 +79,7 @@ export const SetupShortcut = ({ onNext }: IStepProps) => {
       </div>
 
       <button
-        className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 mt-auto mb-16 w-28"
+        className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 mt-auto mb-16 w-20"
         onClick={onNextClicked}
         disabled={!isShortcutConfirmed}
       >

@@ -30,8 +30,8 @@ export const TestShortcut = ({ onNext }: IStepProps) => {
         </p>
       </div>
 
-      <button className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 mt-auto mb-16 w-28">
-        Go Next
+      <button className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 mt-auto mb-20">
+        Start using Cliptron
       </button>
     </div>
   );
