@@ -8,25 +8,10 @@ import { get_history, recopy_at_index } from "../actions/tauri";
 import { ActionButton } from "../components/ActionButton/index";
 import { useRouter } from "next/router";
 
+
 const App = () => {
   const [history, setHistory] = useAtom(historyAtom);
   const router = useRouter();
-
-  const onShortcut = async () => {
-    const mouse_position = (await invoke("get_mouse_position")) as [
-      number,
-      number
-    ];
-
-    const { appWindow, LogicalPosition } = require("@tauri-apps/api/window");
-
-    appWindow.setPosition(
-      new LogicalPosition(mouse_position[0], mouse_position[1])
-    );
-
-    appWindow.show();
-    appWindow.setAlwaysOnTop(true);
-  };
 
   const updateHistory = async () => {
     const history = await get_history();

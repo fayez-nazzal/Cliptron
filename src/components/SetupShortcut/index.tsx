@@ -2,8 +2,10 @@ import { register, unregister } from "@tauri-apps/api/globalShortcut";
 import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { shortcutAtom } from "../../atoms/shortcut";
+import { setup_shortcut } from "../../actions/tauri";
+import { IStepProps } from "@pages/setup";
 
-export const SetupShortcut = () => {
+export const SetupShortcut = ({ onNext }: IStepProps) => {
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
   const [shortcut, setShortcut] = useAtom(shortcutAtom);
   const [isShortcutConfirmed, setIsShortcutConfirmed] =
@@ -45,8 +47,9 @@ export const SetupShortcut = () => {
     e.preventDefault();
   };
 
-  const onNext = () => {
-    register(shortcut, () => {});
+  const onNextClicked = () => {
+    setup_shortcut(shortcut);
+    onNext();
   };
 
   return (
@@ -77,7 +80,7 @@ export const SetupShortcut = () => {
 
       <button
         className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 mt-auto mb-16 w-28"
-        onClick={onNext}
+        onClick={onNextClicked}
         disabled={!isShortcutConfirmed}
       >
         Go Next
