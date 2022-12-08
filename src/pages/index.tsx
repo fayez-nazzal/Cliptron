@@ -135,7 +135,7 @@ const App = () => {
                 {item.startsWith("data:image") ? (
                   <img
                     src={item}
-                    className="flex-1 p-2 border-2 border-gray-300 rounded-md"
+                    className="flex-1 p-2 border-2 border-gray-300 rounded-md max-w-[180px] max-h-40"
                   />
                 ) : (
                   <div className="flex-1 text-ellipsis break-words">{item}</div>

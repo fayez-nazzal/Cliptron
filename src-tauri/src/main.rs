@@ -7,14 +7,14 @@ use arboard::Clipboard;
 use arboard::ImageData;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use core::time;
-use std::fs::File;
-use std::io::Write;
 use enigo::Enigo;
 use image::DynamicImage;
 use image::ImageOutputFormat;
 use once_cell::unsync::Lazy;
+use std::fs::File;
 use std::io;
 use std::io::Cursor;
+use std::io::Write;
 use std::thread;
 use tauri::AppHandle;
 use tauri::Manager;
@@ -67,9 +67,29 @@ fn add_to_history(text: &String, image: Option<ImageData<'static>>) {
 }
 
 fn image_to_base64(img: &DynamicImage) -> String {
+    let mut img = img.clone();
+    let max_width = 180;
+    let max_height = 160;
+    let img_width = img.width();
+    let img_height = img.height();
+
+    if img_width > max_width || img_height > max_height {
+        let ratio = img_width as f32 / img_height as f32;
+        let mut new_width = max_width as f32;
+        let mut new_height = new_width / ratio;
+
+        if new_height > max_height as f32 {
+            new_height = max_height as f32;
+            new_width = new_height * ratio;
+        }     
+
+        img = img.resize(new_width as u32, new_height as u32, image::imageops::FilterType::Nearest);
+    }
+
     let mut image_data: Vec<u8> = Vec::new();
     img.write_to(&mut Cursor::new(&mut image_data), ImageOutputFormat::Png)
         .unwrap();
+
     let res_base64 = base64::encode(image_data);
     format!("data:image/png;base64,{}", res_base64)
 }
