@@ -7,10 +7,12 @@ module.exports = {
   theme: {
     extend: {
       height: {
-        "25": "6.25rem",
-      }
+        25: "6.25rem",
+      },
+    },
+    fontFamily: {
+      sans: ["Open\\ Sans", "sans-serif"],
     },
   },
-  plugins: [
-  ],
-}
+  plugins: [],
+};

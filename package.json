@@ -8,6 +8,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@fontsource/open-sans": "^4.5.13",
     "@icon-park/react": "^1.4.2",
     "@tauri-apps/api": "^1.2.0",
     "jotai": "^1.11.1",
@@ -16,6 +17,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@svgr/webpack": "^6.5.1",
     "@tauri-apps/cli": "^1.2.1",
     "@types/node": "^18.7.11",
     "@types/react": "^18.0.17",
