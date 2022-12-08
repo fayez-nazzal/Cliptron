@@ -54,12 +54,16 @@ const App = () => {
     });
   }, []);
 
-  const recopy_at_index = async (index: number) => {
-    invoke("recopy_at_index", { index });
-
+  const hide_window = () => {
     const { appWindow } = require("@tauri-apps/api/window");
 
     appWindow.hide();
+  }
+
+  const recopy_at_index = async (index: number) => {
+    invoke("recopy_at_index", { index });
+
+    hide_window();
   };
 
   const clear_history = async () => {
@@ -72,19 +76,24 @@ const App = () => {
 
   const save_to_file = async (index: number) => {
     const is_image = history[index].startsWith("data:image");
+    const filters = [];
 
+    if (is_image) {
+      filters.push({
+        name: "Image",
+        extensions: ["png", "jpg", "jpeg", "gif", "webp", "bmp", "ico"],
+      });
+    }
+    
     const filePath = await save({
-      filters: [{
-        name: is_image ? 'Image' : "Text",
-        extensions: is_image ? ['png', 'jpeg'] : ['txt']
-      }]
+      filters
     });
 
     if (filePath) {
       await invoke("save_to_file", { index, path: filePath });
-    } else {
-      console.log('User cancelled save dialog');
     }
+
+    hide_window();
   };
 
   return (
