@@ -6,7 +6,6 @@
 use arboard::Clipboard;
 use arboard::ImageData;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
-use core::time;
 use enigo::Enigo;
 use image::DynamicImage;
 use image::ImageOutputFormat;

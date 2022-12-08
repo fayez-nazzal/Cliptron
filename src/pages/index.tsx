@@ -1,15 +1,16 @@
 import { Delete, DownloadComputer, Copy } from "@icon-park/react";
 import { invoke } from "@tauri-apps/api/tauri";
-import { register } from "@tauri-apps/api/globalShortcut";
 import { useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { historyAtom } from "../atoms/history";
 import { useAtom } from "jotai";
 import { get_history, recopy_at_index } from "../actions/tauri";
 import { ActionButton } from "../components/ActionButton/index";
+import { useRouter } from "next/router";
 
 const App = () => {
   const [history, setHistory] = useAtom(historyAtom);
+  const router = useRouter();
 
   const onShortcut = async () => {
     const mouse_position = (await invoke("get_mouse_position")) as [
@@ -36,15 +37,15 @@ const App = () => {
   useEffect(() => {
     updateHistory();
 
-    register("CONTROL+SPACE", onShortcut);
-
     listen("history", () => {
       updateHistory();
     });
+
+    router.push("/setup");
   }, []);
 
   return (
-    <div className="h-full pt-12">
+    <div className="h-full">
       <div className="overflow-auto h-full">
         {history.map((item, index) => (
           <div className="relative flex border-b-2 p-2 group transition-all hover:bg-gray-50">
