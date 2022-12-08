@@ -1,34 +1,15 @@
-import {
-  Close,
-  Setting,
-  Clear,
-  Delete,
-  DownloadComputer,
-  Copy,
-} from "@icon-park/react";
+import { Delete, DownloadComputer, Copy } from "@icon-park/react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { register } from "@tauri-apps/api/globalShortcut";
 import { useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
-import { save } from "@tauri-apps/api/dialog";
 import { historyAtom } from "../atoms/history";
 import { useAtom } from "jotai";
+import { get_history, recopy_at_index } from "../actions/tauri";
+import { ActionButton } from "../components/ActionButton/index";
 
 const App = () => {
   const [history, setHistory] = useAtom(historyAtom);
-
-  const onClose = () => {
-    const { appWindow } = require("@tauri-apps/api/window");
-
-    // don't close, just hide
-    appWindow.hide();
-  };
-
-  const getHistory = async () => {
-    const history = (await invoke("get_history")) as string[];
-
-    setHistory(history);
-  };
 
   const onShortcut = async () => {
     const mouse_position = (await invoke("get_mouse_position")) as [
@@ -46,138 +27,63 @@ const App = () => {
     appWindow.setAlwaysOnTop(true);
   };
 
+  const updateHistory = async () => {
+    const history = await get_history();
+
+    setHistory(history);
+  };
+
   useEffect(() => {
-    getHistory();
+    updateHistory();
 
     register("CONTROL+SPACE", onShortcut);
 
     listen("history", () => {
-      getHistory();
+      updateHistory();
     });
   }, []);
 
-  const hide_window = () => {
-    const { appWindow } = require("@tauri-apps/api/window");
-
-    appWindow.hide();
-  };
-
-  const recopy_at_index = async (index: number) => {
-    invoke("recopy_at_index", { index });
-
-    hide_window();
-  };
-
-  const clear_history = async () => {
-    await invoke("clear_history");
-  };
-
-  const delete_from_history = async (index: number) => {
-    await invoke("delete_from_history", { index });
-  };
-
-  const save_to_file = async (index: number) => {
-    const is_image = history[index].startsWith("data:image");
-    const filters = [];
-
-    if (is_image) {
-      filters.push({
-        name: "Image",
-        extensions: ["png", "jpg", "jpeg", "gif", "webp", "bmp", "ico"],
-      });
-    }
-
-    const filePath = await save({
-      filters,
-    });
-
-    if (filePath) {
-      await invoke("save_to_file", { index, path: filePath });
-    }
-
-    hide_window();
-  };
-
   return (
-    <div className="w-full h-screen relative overflow-hidden">
-      <div
-        data-tauri-drag-region
-        className="flex flex-row-reverse p-2 border-b-2 h-10 w-full absolute"
-        id="titlebar-close"
-      >
-        <button className="text-[#444] hover:text-red-500" onClick={onClose}>
-          <Close theme="outline" size="20" fill="currentColor" />
-        </button>
+    <div className="h-full pt-12">
+      <div className="overflow-auto h-full">
+        {history.map((item, index) => (
+          <div className="relative flex border-b-2 p-2 group transition-all hover:bg-gray-50">
+            <button
+              key={index}
+              className="flex-1 text-left max-h-44 overflow-auto"
+              onClick={() => recopy_at_index(index)}
+            >
+              {item.startsWith("data:image") ? (
+                <img
+                  src={item}
+                  className="flex-1 rounded-md max-w-[180px] max-h-40"
+                />
+              ) : (
+                <div className="flex-1 text-ellipsis break-words">{item}</div>
+              )}
+            </button>
 
-        <button className="mr-1 text-[#444] hover:text-blue-500">
-          <Setting theme="outline" size="20" fill="currentColor" />
-        </button>
-
-        <div className="mr-auto text-sm pointer-events-none">
-          {history.length} copied items
-        </div>
-
-        <button
-          className="mr-1 text-[#444] hover:text-green-500"
-          onClick={clear_history}
-        >
-          <Clear theme="outline" size="20" fill="currentColor" />
-        </button>
-      </div>
-
-      <div className="h-full pt-10">
-        <div className="overflow-auto h-full">
-          {history.map((item, index) => (
-            <div className="relative flex border-b-2 p-2 group transition-all hover:bg-gray-50">
-              <button
-                key={index}
-                className="flex-1 text-left max-h-44 overflow-auto"
-                onClick={() => recopy_at_index(index)}
-              >
-                {item.startsWith("data:image") ? (
-                  <img
-                    src={item}
-                    className="flex-1 rounded-md max-w-[180px] max-h-40"
-                  />
-                ) : (
-                  <div className="flex-1 text-ellipsis break-words">{item}</div>
-                )}
-              </button>
-
-              <div className="h-20 duration-500 transition-all">
-                <div className=" top-1/2 -translate-y-1/2 right-[0.5rem] flex w-20  group-hover:opacity-100 opacity-0 duration-500 transition-all absolute rounded-md bg-gray-50/90 flex-col justify-center items-center">
-                  <button
-                    className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md"
-                    onClick={() => recopy_at_index(index)}
-                  >
-                    <Copy theme="outline" size="18" fill="currentColor" />
-                    <div className="ml-2 text-xs">Copy</div>
-                  </button>
-
-                  <button
-                    className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md"
-                    onClick={() => save_to_file(index)}
-                  >
-                    <DownloadComputer
-                      theme="outline"
-                      size="18"
-                      fill="currentColor"
-                    />
-                    <div className="ml-2 text-xs">Save</div>
-                  </button>
-
-                  <button
-                    className="flex flex-row items-center w-full h-7 px-2 hover:bg-gray-200 rounded-md"
-                    onClick={() => delete_from_history(index)}
-                  >
-                    <Delete theme="outline" size="18" fill="currentColor" />
-                    <div className="ml-2 text-xs">Delete</div>
-                  </button>
-                </div>
+            <div className="h-20 duration-500 transition-all">
+              <div className=" top-1/2 -translate-y-1/2 right-[0.5rem] flex w-20  group-hover:opacity-100 opacity-0 duration-500 transition-all absolute rounded-md bg-gray-50/90 flex-col justify-center items-center">
+                <ActionButton
+                  icon={Copy}
+                  label="Copy"
+                  onClick={() => recopy_at_index(index)}
+                />
+                <ActionButton
+                  icon={DownloadComputer}
+                  label="Download"
+                  onClick={() => recopy_at_index(index)}
+                />
+                <ActionButton
+                  icon={Delete}
+                  label="Delete"
+                  onClick={() => recopy_at_index(index)}
+                />
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
