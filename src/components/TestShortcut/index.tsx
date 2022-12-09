@@ -8,20 +8,15 @@ import { shortcutAtom } from "../../atoms/shortcut";
 
 export const TestShortcut = ({ onNext }: IStepProps) => {
   const [shortcutCalled, setShortcutCalled] = useState(false);
-  const [shortcut] = useAtom(shortcutAtom);
   const router = useRouter();
 
   useEffect(() => {
-    listen("shortcut", () => {
-      setShortcutCalled(true);
-    });
+    listen("shortcut", () => setShortcutCalled(true));
   }, []);
 
   const onNextClicked = () => {
     router.push("/");
     hide_window();
-
-    localStorage.setItem("shortcut", shortcut);
 
     onNext();
   };
@@ -33,14 +28,14 @@ export const TestShortcut = ({ onNext }: IStepProps) => {
       </h1>
 
       <div className="flex flex-col items-center mt-auto mb-auto">
-        <p className="text-lg mb-4 mx-4">
+        <p className="text-lg mb-4 mx-4 mt-2">
           {shortcutCalled ? (
             <>
               That's it! You can now use your shortcut anytime to call your
               clipboard history.
             </>
           ) : (
-            "Move your mouse anywhere on the screen and press your shortcut."
+            "Move your mouse anywhere on the screen, then press your shortcut."
           )}
         </p>
       </div>

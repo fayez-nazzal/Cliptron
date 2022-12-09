@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { save } from "@tauri-apps/api/dialog";
-import { register } from "@tauri-apps/api/globalShortcut";
+import { register, unregister } from "@tauri-apps/api/globalShortcut";
 import { emit } from "@tauri-apps/api/event";
 
 export const clear_history = async () => {
@@ -73,10 +73,16 @@ export const on_shortcut = async () => {
   emit("shortcut");
 };
 
-let shortcutSet = false;
 export const setup_shortcut = async (shortcut: string) => {
-  !shortcutSet && register(shortcut, on_shortcut);
-  shortcutSet = true;
+  const previousShortcut = localStorage.getItem("shortcut");
+
+  if (previousShortcut) {
+    await unregister(previousShortcut);
+  }
+
+  await register(shortcut, on_shortcut);
+
+  localStorage.setItem("shortcut", shortcut);
 };
 
 export const setup_app_theme = async () => {
@@ -107,16 +113,14 @@ export const set_max_items = async (value: number) => {
   invoke("set_max_items", { value });
 };
 
-export const setup_settings = async () => {
-  set_auto_start(true);
-  set_max_items(10);
-  setup_app_theme();
-};
-
 export const retrieve_settings = async () => {
-  const has_settings = localStorage.getItem("settings");
+  set_max_items(+localStorage.getItem("max_items") || 10);
 
-  if (!has_settings) setup_settings();
+  set_auto_start(
+    localStorage.getItem("auto_start")
+      ? localStorage.getItem("auto_start") === "true"
+      : true
+  );
 
-  localStorage.setItem("settings", "true");
+  setup_app_theme();
 };

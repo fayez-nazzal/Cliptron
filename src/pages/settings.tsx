@@ -4,6 +4,7 @@ import { Checkbox } from "../components/Checkbox/index";
 import { AutostartToggle } from "../components/AutostartToggle/index";
 import { TextInput } from "../components/Input/index";
 import { MaxItemsInput } from "@components/MaxItemsInput/index";
+import { ShortcutInput } from "../components/ShortcutInput/index";
 
 const SettingsPage = () => {
   return (
@@ -22,9 +23,7 @@ const SettingsPage = () => {
         <MaxItemsInput />
       </SettingsEntry>
 
-      <SettingsEntry label="Shortcut">
-        <TextInput className="border-gray-400 border w-[9.6rem]" />
-      </SettingsEntry>
+      <SettingsEntry></SettingsEntry>
 
       <div className="flex w-full justify-center mt-auto mb-20  gap-2">
         <button className="bg-gray-500 text-white rounded-lg p-2">

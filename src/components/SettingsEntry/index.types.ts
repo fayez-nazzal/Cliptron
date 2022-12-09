@@ -1,4 +1,4 @@
 export interface ISettingsEntryProps {
-  label: string;
+  label?: string;
   children: React.ReactNode;
 }
