@@ -60,7 +60,7 @@ fn emit_history_event() {
 
 fn ensure_max_items() {
     unsafe {
-        if CLIPBOARD_HISTORY.len() >= MAX_ITEMS {
+        if CLIPBOARD_HISTORY.len() > MAX_ITEMS {
             CLIPBOARD_HISTORY.remove(CLIPBOARD_HISTORY.len() - 1);
         }
     }
