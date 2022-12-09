@@ -112,6 +112,5 @@ export const retrieve_settings = async () => {
 
   if (!has_settings) setup_settings();
 
-  const should_auto_start = localStorage.getItem("auto_start");
-
+  localStorage.setItem("settings", "true");
 };
