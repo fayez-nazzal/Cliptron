@@ -1,7 +1,19 @@
 import { Check } from "@icon-park/react";
 import { ICheckboxProps } from "@components/Checkbox/index.types";
+import { useState, useEffect } from "react";
 
 export const Checkbox = ({ checked, onChange }: ICheckboxProps) => {
+  const [wasToggled, setWasToggled] = useState(false);
+  const [justMounted, setJustMounted] = useState(true);
+
+  useEffect(() => {
+    if (!justMounted) {
+      setWasToggled(true);
+    } else {
+      setJustMounted(false);
+    }
+  }, [checked]);
+
   return (
     <div className="flex items-center relative w-7 h-7">
       <input
@@ -19,7 +31,7 @@ export const Checkbox = ({ checked, onChange }: ICheckboxProps) => {
         {checked && (
           <Check
             theme="outline"
-            className="scale-up-animation"
+            className={`${wasToggled ? "scale-up-animation" : ""}`}
             size="16"
             strokeWidth={7}
             fill="currentColor"
