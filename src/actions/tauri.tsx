@@ -13,6 +13,12 @@ export const hide_window = () => {
   appWindow.hide();
 };
 
+export const show_window = () => {
+  const { appWindow } = require("@tauri-apps/api/window");
+
+  appWindow.show();
+};
+
 export const delete_from_history = async (index: number) => {
   await invoke("delete_from_history", { index });
 };

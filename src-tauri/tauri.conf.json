@@ -70,7 +70,8 @@
         "title": "Cliptron",
         "width": 300,
         "decorations": false,
-        "transparent": true
+        "transparent": true,
+        "visible": false
       }
     ],
     "macOSPrivateApi": true
