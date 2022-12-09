@@ -67,6 +67,8 @@ export const on_shortcut = async () => {
   emit("shortcut");
 };
 
+let shortcutSet = false;
 export const setup_shortcut = async (shortcut: string) => {
-  register(shortcut, on_shortcut);
+  !shortcutSet && register(shortcut, on_shortcut);
+  shortcutSet = true;
 };

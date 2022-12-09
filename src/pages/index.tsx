@@ -12,11 +12,10 @@ import {
 } from "../actions/tauri";
 import { ActionButton } from "../components/ActionButton/index";
 import { useRouter } from "next/router";
-import { shortcutAtom } from "@atoms/shortcut";
+import { setup_shortcut } from "../actions/tauri";
 
 const App = () => {
   const [history, setHistory] = useAtom(historyAtom);
-  const [shortcut] = useAtom(shortcutAtom);
   const router = useRouter();
 
   const updateHistory = async () => {
@@ -32,8 +31,11 @@ const App = () => {
       updateHistory();
     });
 
-    if (!shortcut) {
+    const savedShortcut = localStorage.getItem("shortcut");
+    if (!savedShortcut) {
       router.push("/setup");
+    } else {
+      setup_shortcut(savedShortcut);
     }
   }, []);
 
