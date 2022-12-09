@@ -3,12 +3,22 @@ import { clear_history, hide_window } from "../../actions/tauri";
 import { TitleBarButton } from "../TitleBarButton/index";
 import { useAtom } from "jotai";
 import { historyAtom } from "../../atoms/history";
+import { useRouter } from "next/router";
 
 export const TitleBar = () => {
   const [history] = useAtom(historyAtom);
+  const router = useRouter();
 
   const onClose = () => {
     hide_window();
+  };
+
+  const onSettings = () => {
+    router.push(router.pathname === "/settings" ? "/" : "/settings");
+  };
+
+  const onClear = () => {
+    clear_history();
   };
 
   return (
@@ -25,18 +35,20 @@ export const TitleBar = () => {
 
       <TitleBarButton
         icon={Setting}
-        onClick={() => {}}
-        className="hover:text-blue-500"
+        onClick={onSettings}
+        className={`hover:text-blue-500 ${
+          router.pathname === "/settings" ? "text-blue-400" : ""
+        }`}
       />
 
-      <div className="mr-auto text-sm pointer-events-none">
+      <div className={`mr-auto text-sm pointer-events-none`}>
         {history.length} copied items
       </div>
 
       <TitleBarButton
         icon={Clear}
-        onClick={clear_history}
-        className="mr-1 hover:text-green-500"
+        onClick={onClear}
+        className={`mr-1 hover:text-green-500`}
       />
     </div>
   );
