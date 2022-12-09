@@ -32,9 +32,9 @@ export const ShortcutSettingsEntry = () => {
       />
 
       <button
-        className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 w-14 ml-2 disabled:opacity-50"
+        className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 w-14 ml-2 disabled:opacity-50 hover:brightness-95 active:ring"
         onClick={() => handleSubmit(onApplyClicked)}
-        disabled={!isShortcutConfirmed}
+        disabled={!isShortcutConfirmed || !unsavedShortcut}
       >
         Apply
       </button>

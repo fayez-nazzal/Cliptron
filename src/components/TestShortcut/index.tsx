@@ -41,7 +41,7 @@ export const TestShortcut = ({ onNext }: IStepProps) => {
       </div>
 
       <button
-        className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 mt-auto mb-20 disabled:opacity-50"
+        className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 mt-auto mb-20 disabled:opacity-50 hover:brightness-95 active:ring"
         onClick={onNextClicked}
         disabled={!shortcutCalled}
       >
