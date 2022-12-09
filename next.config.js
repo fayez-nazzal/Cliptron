@@ -6,6 +6,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  experimental: {
+    swcMinify: true,
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
