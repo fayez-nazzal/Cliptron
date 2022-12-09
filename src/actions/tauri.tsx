@@ -73,8 +73,32 @@ export const setup_shortcut = async (shortcut: string) => {
   shortcutSet = true;
 };
 
+export const setup_app_theme = async () => {
+  if (
+    localStorage.getItem("theme") === "dark" ||
+    (!("theme" in localStorage) &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches)
+  ) {
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+};
+
+export const toggle_theme = async () => {
+  if (localStorage.getItem("theme")) {
+    localStorage.removeItem("theme");
+    document.documentElement.classList.remove("dark");
+  } else {
+    localStorage.setItem("theme", "dark");
+    document.documentElement.classList.add("dark");
+  }
+};
+
 export const setup_settings = async () => {
   localStorage.setItem("auto_start", "true");
+  setup_app_theme();
 };
 
 export const retrieve_settings = async () => {
