@@ -4,6 +4,7 @@ import { shortcutAtom } from "@atoms/shortcut";
 import { useState, useEffect } from "react";
 import { useErrorIf } from "../../hooks/useErrorIf";
 import { setup_shortcut } from "../../actions/tauri";
+import { SettingsEntry } from "@components/SettingsEntry/index";
 
 export const ShortcutSettingsEntry = () => {
   const [unsavedShortcut, setUnsavedShortcut] = useState<string>("");
@@ -15,12 +16,13 @@ export const ShortcutSettingsEntry = () => {
   const onApplyClicked = () => {
     setShortcut(unsavedShortcut);
     setup_shortcut(unsavedShortcut);
+    setUnsavedShortcut("");
   };
 
   return (
-    <>
+    <SettingsEntry>
       <ShortcutInput
-        className={`border-gray-400 border w-40 max-w-40`}
+        className={`border-gray-400 border w-40 max-w-40 text-sm`}
         shortcut={shortcut}
         isConfirmed={isShortcutConfirmed}
         setIsConfirmed={setIsShortcutConfirmed}
@@ -30,11 +32,12 @@ export const ShortcutSettingsEntry = () => {
       />
 
       <button
-        className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 w-16"
+        className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 w-14 ml-2 disabled:opacity-50"
         onClick={() => handleSubmit(onApplyClicked)}
+        disabled={!isShortcutConfirmed}
       >
         Apply
       </button>
-    </>
+    </SettingsEntry>
   );
 };
