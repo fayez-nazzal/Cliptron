@@ -3,6 +3,7 @@ import { SettingsEntry } from "../components/SettingsEntry/index";
 import { Checkbox } from "../components/Checkbox/index";
 import { AutostartToggle } from "../components/AutostartToggle/index";
 import { TextInput } from "../components/Input/index";
+import { MaxItemsInput } from "@components/MaxItemsInput/index";
 
 const SettingsPage = () => {
   return (
@@ -18,12 +19,7 @@ const SettingsPage = () => {
       </SettingsEntry>
 
       <SettingsEntry label="Max clipboard items">
-        <TextInput
-          className="border-gray-400 border w-14"
-          type="number"
-          max={100}
-          min={2}
-        />
+        <MaxItemsInput />
       </SettingsEntry>
 
       <SettingsEntry label="Shortcut">

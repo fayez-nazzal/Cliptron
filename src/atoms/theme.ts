@@ -1,5 +1,5 @@
 import { atom } from "jotai";
 
 export const themeAtom = atom<string>(
-  localStorage ? localStorage.getItem("theme") : ""
+  typeof localStorage !== "undefined" ? localStorage.getItem("theme") : ""
 );

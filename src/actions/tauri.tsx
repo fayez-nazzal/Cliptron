@@ -102,8 +102,14 @@ export const set_auto_start = async (value: boolean) => {
   invoke("set_auto_start", { value });
 };
 
+export const set_max_items = async (value: number) => {
+  localStorage.setItem("max_items", value.toString());
+  invoke("set_max_items", { value });
+};
+
 export const setup_settings = async () => {
   set_auto_start(true);
+  set_max_items(10);
   setup_app_theme();
 };
 

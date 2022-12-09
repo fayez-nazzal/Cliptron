@@ -33,6 +33,8 @@ static mut CLIPBOARD: once_cell::unsync::Lazy<arboard::Clipboard> = Lazy::new(||
     clipboard
 });
 
+static mut MAX_ITEMS: usize = 10;
+
 struct GlobalAppHandle {
     handle: Option<AppHandle>,
 }
@@ -56,6 +58,14 @@ fn emit_history_event() {
     }
 }
 
+fn ensure_max_items() {
+    unsafe {
+        if CLIPBOARD_HISTORY.len() >= MAX_ITEMS {
+            CLIPBOARD_HISTORY.remove(CLIPBOARD_HISTORY.len() - 1);
+        }
+    }
+}
+
 fn add_to_history(text: &String, image: Option<ImageData<'static>>) {
     let clipboard_content = ClipboardContent {
         text: text.clone(),
@@ -65,6 +75,7 @@ fn add_to_history(text: &String, image: Option<ImageData<'static>>) {
     unsafe {
         CLIPBOARD_HISTORY.insert(0, clipboard_content);
 
+        ensure_max_items();
         emit_history_event()
     }
 }
@@ -220,6 +231,15 @@ fn set_auto_start(value: bool) {
     }
 }
 
+#[tauri::command(async)]
+fn set_max_items(value: usize) {
+    unsafe {
+        println!("max items {}", value);
+        MAX_ITEMS = value;
+        ensure_max_items();
+    }
+}
+
 fn main() {
     thread::spawn(|| {
         let result = Master::new(Handler).run();
@@ -256,7 +276,6 @@ fn main() {
                 );
             }
 
-
             Ok(())
         })
         .system_tray(tray)
@@ -284,7 +303,8 @@ fn main() {
             clear_history,
             recopy_at_index,
             save_to_file,
-            set_auto_start
+            set_auto_start,
+            set_max_items
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

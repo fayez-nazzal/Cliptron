@@ -1,5 +1,7 @@
 import { atom } from "jotai";
 
 export const autostartAtom = atom<boolean>(
-  localStorage ? localStorage.getItem("auto_start") === "true" : true
+  typeof localStorage !== "undefined"
+    ? localStorage.getItem("auto_start") === "true"
+    : true
 );
