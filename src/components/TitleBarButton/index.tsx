@@ -8,7 +8,7 @@ export const TitleBarButton = ({
 }: ITitleBarButtonProps) => {
   return (
     <button
-      className={`text-[#444] ${className} p-1 rounded hover:bg-gray-200`}
+      className={`text-[#444] p-1 rounded hover:bg-gray-200 ${className}`}
       onClick={onClick}
     >
       <Icon theme="outline" size="22" fill="currentColor" />

@@ -4,6 +4,8 @@ import { TitleBarButton } from "../TitleBarButton/index";
 import { useAtom } from "jotai";
 import { historyAtom } from "../../atoms/history";
 import { useRouter } from "next/router";
+import Image from "next/image";
+import Icon from "@assets/icon.png";
 
 export const TitleBar = () => {
   const [history] = useAtom(historyAtom);
@@ -36,20 +38,35 @@ export const TitleBar = () => {
       <TitleBarButton
         icon={Setting}
         onClick={onSettings}
-        className={`hover:text-blue-500 ${
-          router.pathname === "/settings" ? "text-blue-400" : ""
+        className={`hover:text-blue-400 ${
+          router.pathname === "/settings" ? "text-blue-500-light" : ""
         }`}
       />
 
-      <div className={`mr-auto text-sm pointer-events-none`}>
+      <div
+        className={`mr-auto text-sm pointer-events-none ${
+          router.pathname !== "/" ? "hidden" : ""
+        }`}
+      >
         {history.length} copied items
       </div>
 
       <TitleBarButton
         icon={Clear}
         onClick={onClear}
-        className={`mr-1 hover:text-green-500`}
+        className={`mr-1 hover:text-green-500 ${
+          router.pathname !== "/" ? "hidden" : ""
+        }`}
       />
+
+      <div
+        className={`mr-auto ml-1 text-sm pointer-events-none flex items-center gap-1 ${
+          router.pathname === "/" ? "hidden" : ""
+        }`}
+      >
+        <Image src={Icon} width={20} height={20} />
+        <span className="translate-y-[1px] capitalize">Cliptron</span>
+      </div>
     </div>
   );
 };
