@@ -1,13 +1,9 @@
 import { ThemeToggle } from "@components/ThemeToggle";
 import { SettingsEntry } from "../components/SettingsEntry/index";
-import { Checkbox } from "../components/Checkbox/index";
 import { AutostartToggle } from "../components/AutostartToggle/index";
-import { TextInput } from "../components/Input/index";
 import { MaxItemsInput } from "@components/MaxItemsInput/index";
-import { ShortcutInput } from "../components/ShortcutInput/index";
 import { ShortcutSettingsEntry } from "../components/ShortcutSettingsEntry/index";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 
 const SettingsPage = () => {
   const router = useRouter();
@@ -17,8 +13,8 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="w-screen h-screen gap-2 flex flex-col text-center items-center px-6">
-      <h1 className="text-2xl mt-4 mb-1">Settings</h1>
+    <div className="w-screen h-full gap-2 flex flex-col text-center items-center px-6">
+      <h1 className="text-2xl mt-3 mb-1">Settings</h1>
 
       <SettingsEntry label="App Theme">
         <ThemeToggle />
@@ -34,7 +30,7 @@ const SettingsPage = () => {
 
       <ShortcutSettingsEntry />
 
-      <div className="flex w-full justify-center mt-auto mb-16 gap-2">
+      <div className="flex w-full justify-center mt-auto mb-3 gap-2 mt-1">
         <button
           className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 flex-[0.4] hover:brightness-95 active:ring"
           onClick={onOK}

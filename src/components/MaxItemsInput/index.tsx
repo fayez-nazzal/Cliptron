@@ -17,7 +17,7 @@ export const MaxItemsInput = () => {
 
   return (
     <TextInput
-      className="border-gray-400 border w-14 caret-transparent text-sm"
+      className="border-gray400-light dark:border-gray400-dark border w-14 caret-transparent text-sm"
       type="number"
       max={100}
       min={2}

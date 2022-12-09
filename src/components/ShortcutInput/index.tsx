@@ -66,7 +66,9 @@ export const ShortcutInput = ({
           : unsavedShortcut
       }
       className={`${rest.className ?? ""} ${
-        !focused ? "text-black" : ""
+        !focused
+          ? "text-black/30 dark:text-white/50"
+          : "text-black dark:text-white"
       } flex-1 ${
         isError ? "border-red-500-light dark:border-red-500-dark" : ""
       } `}

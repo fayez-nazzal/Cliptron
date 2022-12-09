@@ -29,50 +29,48 @@ const App = () => {
 
   return (
     <div className="h-full">
-      <div className="overflow-auto h-full">
-        {history.map((item, index) => {
-          const isImage = item.startsWith("data:image");
+      {history.map((item, index) => {
+        const isImage = item.startsWith("data:image");
 
-          return (
-            <div className="relative flex border-b-2 p-2 group transition-all hover:bg-gray-50">
-              <button
-                key={index}
-                className="flex-1 text-left max-h-44 overflow-auto"
-                onClick={() => recopy_at_index(index)}
-              >
-                {isImage ? (
-                  <img
-                    src={item}
-                    className="flex-1 rounded-md max-w-[180px] max-h-40"
-                  />
-                ) : (
-                  <div className="flex-1 text-ellipsis break-words">{item}</div>
-                )}
-              </button>
+        return (
+          <div className="relative flex border-b border-gray300-light/80 dark:border-gray300-dark/80 px-2 group transition-all hover:bg-gray50-light dark:bg-gray200-dark">
+            <button
+              key={index}
+              className="flex-1 text-left max-h-44 overflow-auto text-black dark:text-white"
+              onClick={() => recopy_at_index(index)}
+            >
+              {isImage ? (
+                <img
+                  src={item}
+                  className="flex-1 rounded-md max-w-[180px] max-h-40"
+                />
+              ) : (
+                <div className="flex-1 text-ellipsis break-words">{item}</div>
+              )}
+            </button>
 
-              <div className="h-20 duration-500 transition-all">
-                <div className=" top-1/2 -translate-y-1/2 right-[0.5rem] flex w-20  group-hover:opacity-100 opacity-0 duration-500 transition-all absolute rounded-md bg-gray-50/90 flex-col justify-center items-center">
-                  <ActionButton
-                    icon={Copy}
-                    label="Copy"
-                    onClick={() => recopy_at_index(index)}
-                  />
-                  <ActionButton
-                    icon={DownloadComputer}
-                    label="Save"
-                    onClick={() => save_to_file(index, isImage)}
-                  />
-                  <ActionButton
-                    icon={Delete}
-                    label="Delete"
-                    onClick={() => delete_from_history(index)}
-                  />
-                </div>
+            <div className="h-24 duration-500 transition-all">
+              <div className=" top-1/2 -translate-y-1/2 right-[0.5rem] flex w-20  group-hover:opacity-100 opacity-0 duration-500 transition-all absolute rounded-md bg-gray100-light/90 dark:bg-gray100-dark flex-col justify-center items-center">
+                <ActionButton
+                  icon={Copy}
+                  label="Copy"
+                  onClick={() => recopy_at_index(index)}
+                />
+                <ActionButton
+                  icon={DownloadComputer}
+                  label="Save"
+                  onClick={() => save_to_file(index, isImage)}
+                />
+                <ActionButton
+                  icon={Delete}
+                  label="Delete"
+                  onClick={() => delete_from_history(index)}
+                />
               </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

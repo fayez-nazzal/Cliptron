@@ -3,10 +3,12 @@ import { ILayoutProps } from "./index.types";
 
 export const Layout = ({ children }: ILayoutProps) => {
   return (
-    <div className="w-full h-screen rounded-xl bg-white dark:bg-gray-500 relative overflow-hidden">
+    <div className="w-full h-screen rounded-xl bg-bg-light dark:bg-bg-dark relative overflow-hidden">
       <TitleBar />
 
-      <div className="pt-12 ">{children}</div>
+      <div className="h-full pt-12">
+        <div className="h-full overflow-auto">{children}</div>
+      </div>
     </div>
   );
 };

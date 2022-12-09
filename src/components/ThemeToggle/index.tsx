@@ -14,11 +14,14 @@ export const ThemeToggle = () => {
   };
 
   return (
-    <button className="flex gap-1 items-center" onClick={toggleTheme}>
+    <button
+      className="flex gap-1 items-center text-black dark:text-white hover:bg-gray300-light dark:hover:bg-gray200-dark p-1 rounded-lg w-24 flex justify-center"
+      onClick={toggleTheme}
+    >
       {theme === "dark" ? (
-        <DarkMode theme="outline" size="24" fill="#fff" />
+        <DarkMode theme="outline" size="24" fill="currentColor" />
       ) : (
-        <SunOne theme="outline" size="24" fill="#000" />
+        <SunOne theme="outline" size="24" fill="currentColor" />
       )}
 
       <span className="capitalize">{theme}</span>

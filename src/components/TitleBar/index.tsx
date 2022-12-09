@@ -26,25 +26,25 @@ export const TitleBar = () => {
   return (
     <div
       data-tauri-drag-region
-      className="flex items-center flex-row-reverse p-2 border-b-2 h-12 w-full absolute"
+      className="flex items-center flex-row-reverse p-2 border-b-2 dark:border-gray300-dark h-12 w-full absolute"
       id="titlebar-close"
     >
       <TitleBarButton
         icon={Close}
         onClick={onClose}
-        className="hover:text-red-500"
+        className="hover:text-red-500 dark:hover:text-red-400"
       />
 
       <TitleBarButton
         icon={Setting}
         onClick={onSettings}
-        className={`hover:text-blue-400 ${
+        className={`hover:text-blue-400 dark:hover:text-blue-300 ${
           router.pathname === "/settings" ? "text-blue-500-light" : ""
         }`}
       />
 
       <div
-        className={`mr-auto text-sm pointer-events-none ${
+        className={`mr-auto text-sm pointer-events-none text-black dark:text-white ${
           router.pathname !== "/" ? "hidden" : ""
         }`}
       >
@@ -54,7 +54,7 @@ export const TitleBar = () => {
       <TitleBarButton
         icon={Clear}
         onClick={onClear}
-        className={`mr-1 hover:text-green-500 ${
+        className={`mr-1 hover:text-green-500 dark:hover:text-green-400 ${
           router.pathname !== "/" ? "hidden" : ""
         }`}
       />

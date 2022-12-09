@@ -15,7 +15,7 @@ export const Checkbox = ({ checked, onChange }: ICheckboxProps) => {
   }, [checked]);
 
   return (
-    <div className="flex items-center relative w-7 h-7">
+    <div className="flex items-center relative w-7 h-7 group">
       <input
         type="checkbox"
         checked={checked}
@@ -24,9 +24,11 @@ export const Checkbox = ({ checked, onChange }: ICheckboxProps) => {
       />
 
       <div
-        className={`w-full h-full border-2 border-gray-400 rounded-lg flex items-center justify-center ${
-          checked ? "bg-blue-500-light" : ""
-        } text-white pointer-events-none`}
+        className={`w-full h-full border-2 border-gray300-light dark:border-gray400-dark rounded-lg flex items-center justify-center ${
+          checked
+            ? "bg-blue-500-light dark:bg-blue-500-dark group-hover:bg-blue-500-light/90"
+            : "group-hover:bg-blue-500-light/60"
+        } text-icon-dark pointer-events-none`}
       >
         {checked && (
           <Check

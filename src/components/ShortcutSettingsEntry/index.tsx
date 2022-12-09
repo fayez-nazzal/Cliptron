@@ -22,7 +22,7 @@ export const ShortcutSettingsEntry = () => {
   return (
     <SettingsEntry>
       <ShortcutInput
-        className={`border-gray-400 border w-40 max-w-40 text-sm`}
+        className={`border-gray400-light dark:border-gray400-dark border w-40 max-w-40 text-sm`}
         shortcut={shortcut}
         isConfirmed={isShortcutConfirmed}
         setIsConfirmed={setIsShortcutConfirmed}

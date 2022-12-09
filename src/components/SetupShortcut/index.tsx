@@ -20,7 +20,7 @@ export const SetupShortcut = ({ onNext }: IStepProps) => {
   };
 
   return (
-    <div className="w-screen h-screen flex flex-col text-center items-center">
+    <div className="w-screen h-full flex flex-col text-center items-center">
       <h1 className="text-2xl mt-4 mb-2">Welcome to Cliptron! 🎉</h1>
 
       <div className="flex flex-col items-center mt-auto mb-auto">

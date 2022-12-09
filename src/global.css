@@ -22,3 +22,26 @@
 .scale-up-animation {
     animation: scale-up 0.3s cubic-bezier(0.39, 0.575, 0.565, 1) both;
 }
+
+::-webkit-scrollbar {
+    width: 0.8rem !important;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    border: 0.1rem solid transparent;
+    border-radius: 1rem;
+    background-clip: padding-box;
+    background-color: #cbcfd4;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background-color: #363842;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}

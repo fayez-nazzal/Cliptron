@@ -3,8 +3,6 @@ import { IStepProps } from "@pages/setup";
 import { listen } from "@tauri-apps/api/event";
 import { hide_window } from "../../actions/tauri";
 import { useRouter } from "next/router";
-import { useAtom } from "jotai";
-import { shortcutAtom } from "../../atoms/shortcut";
 
 export const TestShortcut = ({ onNext }: IStepProps) => {
   const [shortcutCalled, setShortcutCalled] = useState(false);
@@ -22,7 +20,7 @@ export const TestShortcut = ({ onNext }: IStepProps) => {
   };
 
   return (
-    <div className="w-screen h-screen flex flex-col text-center items-center">
+    <div className="w-screen h-full flex flex-col text-center items-center">
       <h1 className="text-2xl mt-4 mb-2">
         {shortcutCalled ? "Your shortcut works 🥳" : "Test your Shortcut!"}
       </h1>
