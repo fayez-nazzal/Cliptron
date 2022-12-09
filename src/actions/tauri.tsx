@@ -97,8 +97,13 @@ export const set_theme = async (theme: "dark" | "light") => {
   setup_app_theme();
 };
 
+export const set_auto_start = async (value: boolean) => {
+  localStorage.setItem("auto_start", value.toString());
+  invoke("set_auto_start", { value });
+};
+
 export const setup_settings = async () => {
-  localStorage.setItem("auto_start", "true");
+  set_auto_start(true);
   setup_app_theme();
 };
 
@@ -109,5 +114,4 @@ export const retrieve_settings = async () => {
 
   const should_auto_start = localStorage.getItem("auto_start");
 
-  invoke("set_auto_start", { value: should_auto_start === "true" });
 };

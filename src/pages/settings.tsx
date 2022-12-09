@@ -1,5 +1,7 @@
 import { ThemeToggle } from "@components/ThemeToggle";
 import { SettingsEntry } from "../components/SettingsEntry/index";
+import { Checkbox } from "../components/Checkbox/index";
+import { AutostartToggle } from "../components/AutostartToggle/index";
 
 const SettingsPage = () => {
   return (
@@ -11,7 +13,7 @@ const SettingsPage = () => {
       </SettingsEntry>
 
       <SettingsEntry label="Launch on startup">
-        <input type="checkbox" />
+        <AutostartToggle />
       </SettingsEntry>
 
       <SettingsEntry label="Max clipboard items">
