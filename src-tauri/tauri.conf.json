@@ -69,8 +69,10 @@
         "resizable": false,
         "title": "Cliptron",
         "width": 300,
-        "decorations": false
+        "decorations": false,
+        "transparent": true
       }
-    ]
+    ],
+    "macOSPrivateApi": true
   }
 }
