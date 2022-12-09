@@ -1,11 +1,13 @@
+import { ThemeToggle } from "@components/ThemeToggle";
 import { SettingsEntry } from "../components/SettingsEntry/index";
+
 const SettingsPage = () => {
   return (
     <div className="w-screen h-screen gap-2 flex flex-col text-center items-center px-6">
       <h1 className="text-2xl mt-4 mb-2">Settings</h1>
 
       <SettingsEntry label="App Theme">
-        <input type="checkbox" />
+        <ThemeToggle />
       </SettingsEntry>
 
       <SettingsEntry label="Launch on startup">
