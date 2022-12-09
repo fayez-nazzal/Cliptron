@@ -2,6 +2,7 @@ import { ThemeToggle } from "@components/ThemeToggle";
 import { SettingsEntry } from "../components/SettingsEntry/index";
 import { Checkbox } from "../components/Checkbox/index";
 import { AutostartToggle } from "../components/AutostartToggle/index";
+import { TextInput } from "../components/Input/index";
 
 const SettingsPage = () => {
   return (
@@ -17,11 +18,16 @@ const SettingsPage = () => {
       </SettingsEntry>
 
       <SettingsEntry label="Max clipboard items">
-        <input type="number" className="w-16" />
+        <TextInput
+          className="border-gray-400 border w-14"
+          type="number"
+          max={100}
+          min={2}
+        />
       </SettingsEntry>
 
       <SettingsEntry label="Shortcut">
-        <input type="text" />
+        <TextInput className="border-gray-400 border w-[9.6rem]" />
       </SettingsEntry>
 
       <div className="flex w-full justify-center mt-auto mb-20  gap-2">
