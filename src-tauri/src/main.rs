@@ -5,11 +5,13 @@
 
 use arboard::Clipboard;
 use arboard::ImageData;
+use auto_launch::*;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use enigo::Enigo;
 use image::DynamicImage;
 use image::ImageOutputFormat;
 use once_cell::unsync::Lazy;
+use std::env::current_exe;
 use std::fs::File;
 use std::io;
 use std::io::Cursor;
@@ -37,6 +39,8 @@ struct GlobalAppHandle {
 
 static mut GLOBAL_APP_HANDLE: once_cell::unsync::Lazy<GlobalAppHandle> =
     Lazy::new(|| GlobalAppHandle { handle: None });
+
+static mut auto_start: Option<AutoLaunch> = None;
 
 #[derive(Clone, serde::Serialize)]
 struct HistoryEventPayload {}
@@ -80,9 +84,13 @@ fn image_to_base64(img: &DynamicImage) -> String {
         if new_height > max_height as f32 {
             new_height = max_height as f32;
             new_width = new_height * ratio;
-        }     
+        }
 
-        img = img.resize(new_width as u32, new_height as u32, image::imageops::FilterType::Nearest);
+        img = img.resize(
+            new_width as u32,
+            new_height as u32,
+            image::imageops::FilterType::Nearest,
+        );
     }
 
     let mut image_data: Vec<u8> = Vec::new();
@@ -199,6 +207,19 @@ fn save_to_file(index: usize, path: String) {
     }
 }
 
+#[tauri::command(async)]
+fn set_auto_start(value: bool) {
+    unsafe {
+        if auto_start != None {
+            if value {
+                auto_start.as_ref().unwrap().enable().unwrap();
+            } else {
+                auto_start.as_ref().unwrap().disable().unwrap();
+            }
+        }
+    }
+}
+
 fn main() {
     thread::spawn(|| {
         let result = Master::new(Handler).run();
@@ -220,6 +241,22 @@ fn main() {
             unsafe {
                 GLOBAL_APP_HANDLE.handle = Some(handle);
             }
+
+            let app_name = &app.package_info().name;
+            let current_exe = current_exe().unwrap();
+
+            unsafe {
+                auto_start = Some(
+                    AutoLaunchBuilder::new()
+                        .set_app_name(&app_name)
+                        .set_app_path(&current_exe.to_str().unwrap())
+                        .set_use_launch_agent(true)
+                        .build()
+                        .unwrap(),
+                );
+            }
+
+
             Ok(())
         })
         .system_tray(tray)
@@ -246,7 +283,8 @@ fn main() {
             delete_from_history,
             clear_history,
             recopy_at_index,
-            save_to_file
+            save_to_file,
+            set_auto_start
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

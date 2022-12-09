@@ -72,3 +72,17 @@ export const setup_shortcut = async (shortcut: string) => {
   !shortcutSet && register(shortcut, on_shortcut);
   shortcutSet = true;
 };
+
+export const setup_settings = async () => {
+  localStorage.setItem("auto_start", "true");
+};
+
+export const retrieve_settings = async () => {
+  const has_settings = localStorage.getItem("settings");
+
+  if (!has_settings) setup_settings();
+
+  const should_auto_start = localStorage.getItem("auto_start");
+
+  invoke("set_auto_start", { value: should_auto_start === "true" });
+};
