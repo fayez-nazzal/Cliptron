@@ -1,3 +1,5 @@
 import { atom } from "jotai";
 
-export const themeAtom = atom<"dark" | "light" | "">("");
+export const themeAtom = atom<string>(
+  localStorage ? localStorage.getItem("theme") : ""
+);

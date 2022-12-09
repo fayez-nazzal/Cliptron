@@ -92,14 +92,9 @@ export const setup_app_theme = async () => {
   }
 };
 
-export const toggle_theme = async () => {
-  if (localStorage.getItem("theme")) {
-    localStorage.removeItem("theme");
-    document.documentElement.classList.remove("dark");
-  } else {
-    localStorage.setItem("theme", "dark");
-    document.documentElement.classList.add("dark");
-  }
+export const set_theme = async (theme: "dark" | "light") => {
+  localStorage.setItem("theme", theme);
+  setup_app_theme();
 };
 
 export const setup_settings = async () => {

@@ -1,14 +1,16 @@
 import { themeAtom } from "@atoms/theme";
 import { DarkMode, SunOne } from "@icon-park/react";
 import { useAtom } from "jotai";
-import { toggle_theme } from "../../actions/tauri";
+import { set_theme } from "../../actions/tauri";
 
 export const ThemeToggle = () => {
   const [theme, setTheme] = useAtom(themeAtom);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-    toggle_theme();
+    const newTheme = theme === "dark" ? "light" : "dark";
+
+    setTheme(newTheme);
+    set_theme(newTheme);
   };
 
   return (
