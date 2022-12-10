@@ -197,9 +197,39 @@ fn recopy_at_index(index: usize) {
 
 #[cfg(target_os = "linux")]
 fn get_mouse_position_linux() -> (i32, i32) {
-    use enigo::MouseControllable;
+    use std::{process::{Command, Stdio}, io::{Read, BufReader}};
 
-    Enigo::new().mouse_location()
+    let output = match Command::new("xdotool")
+            .arg("getmouselocation")
+            .arg("--shell")
+            .stdout(Stdio::piped())
+            .spawn() {
+        Ok(it) => it,
+        Err(_) => return (0, 0),
+    }
+        .stdout
+        .ok_or(io::Error::new(io::ErrorKind::Other, "Failed to capture xdotool output")).unwrap();
+
+    let mut reader = BufReader::new(output);
+    let mut buffer = String::new();
+    reader.read_to_string(&mut buffer).unwrap();
+
+    let mut x = 0;
+    let mut y = 0;
+
+    for line in buffer.lines() {
+        let mut parts = line.split('=');
+        let key = parts.next().unwrap();
+        let value = parts.next().unwrap();
+
+        if key == "X" {
+            x = value.parse().unwrap();
+        } else if key == "Y" {
+            y = value.parse().unwrap();
+        }
+    }
+
+    (x, y)
 }
 
 #[cfg(any(target_os = "windows", target_os = "macos"))]
@@ -261,9 +291,10 @@ fn main() {
         }
     });
 
+    let show = CustomMenuItem::new("show".to_string(), "Show");
     let quit = CustomMenuItem::new("quit".to_string(), "Quit");
 
-    let tray_menu = SystemTrayMenu::new().add_item(quit);
+    let tray_menu = SystemTrayMenu::new().add_item(show).add_item(quit);
 
     let tray = SystemTray::new().with_menu(tray_menu);
 
@@ -301,6 +332,10 @@ fn main() {
                 main_window.show().unwrap();
             }
             SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+                "show" => {
+                    let main_window = app.get_window("main").unwrap();
+                    main_window.show().unwrap();
+                }
                 "quit" => {
                     app.exit(0);
                 }

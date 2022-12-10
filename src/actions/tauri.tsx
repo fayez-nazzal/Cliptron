@@ -68,7 +68,6 @@ export const on_shortcut = async () => {
   );
 
   appWindow.show();
-  appWindow.setAlwaysOnTop(true);
 
   emit("shortcut");
 };

@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "Cliptron",
-    "version": "0.0.0"
+    "version": "1.0.0"
   },
   "tauri": {
     "systemTray": {
@@ -19,10 +19,9 @@
         "all": true
       },
       "window": {
-        "all": true
-      },
-      "clipboard": {
-        "all": true
+        "show": true,
+        "hide": true,
+        "setPosition": true
       },
       "dialog": {
         "save": true

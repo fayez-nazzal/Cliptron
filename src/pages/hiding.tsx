@@ -1,22 +1,38 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { hide_window } from "../actions/tauri";
+import { hide_window, on_shortcut } from '../actions/tauri';
+import {invoke} from '@tauri-apps/api/tauri';
 
 const hidingPage = () => {
   const [countdown, setCountdown] = useState(5);
   const router = useRouter();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCountdown(countdown - 1);
+  const decreaseCountdown = () => {
+    setCountdown(countdown - 1);
+  };
 
-      if (countdown === 0) {
-        clearInterval(interval);
-        hide_window();
-        router.push("/");
-      }
+  const setCountdownTimer = () => {
+    setTimeout(() => {
+      decreaseCountdown();
     }, 1000);
+  };
+
+  const onCountdownEnd = () => {
+    hide_window();
+    router.push("/");
+  };
+
+  useEffect(() => {
+    if (countdown > 0) {
+      setCountdownTimer();
+    } else {
+      onCountdownEnd();
+    }
   }, [countdown]);
+
+  useEffect(() => {
+    on_shortcut();
+  }, [])
 
   return (
     <div className="w-screen h-full gap-2 flex flex-col text-center items-center px-6">
