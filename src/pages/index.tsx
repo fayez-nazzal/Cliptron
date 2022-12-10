@@ -14,7 +14,7 @@ import { ActionButton } from "../components/ActionButton/index";
 
 const App = () => {
   const [history, setHistory] = useAtom(historyAtom);
-
+  
   const updateHistory = async () => {
     const history = await get_history();
 

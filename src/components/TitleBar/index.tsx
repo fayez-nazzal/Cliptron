@@ -10,6 +10,7 @@ import Icon from "@assets/icon.png";
 export const TitleBar = () => {
   const [history] = useAtom(historyAtom);
   const router = useRouter();
+  const showAppIcon = router.pathname !== "/";
 
   const onClose = () => {
     hide_window();
@@ -45,7 +46,7 @@ export const TitleBar = () => {
 
       <div
         className={`mr-auto text-sm pointer-events-none text-black dark:text-white ${
-          router.pathname !== "/" ? "hidden" : ""
+          showAppIcon ? "hidden" : ""
         }`}
       >
         {history.length} copied items
@@ -55,7 +56,7 @@ export const TitleBar = () => {
         icon={Clear}
         onClick={onClear}
         className={`mr-1 hover:text-green-500 dark:hover:text-green-400 ${
-          router.pathname !== "/" ? "hidden" : ""
+          showAppIcon ? "hidden" : ""
         }`}
       />
 

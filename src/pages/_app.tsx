@@ -1,15 +1,20 @@
-import { Provider } from "jotai";
+import { Provider, useAtom } from "jotai";
 import type { AppProps } from "next/app";
 import { Layout } from "../components/Layout";
 import "../global.css";
 import "@fontsource/open-sans";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { retrieve_settings } from "@actions/tauri";
 import { setup_shortcut } from "@actions/tauri";
 import { useRouter } from "next/router";
+import { hide_window } from "../actions/tauri";
+import { visitedAtom } from "@atoms/visited";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
+  const [canRender, setCanRender] = useState(false);
+  const [visitedRoutes, setVisitedRoutes] = useAtom(visitedAtom);
+
   useEffect(() => {
     retrieve_settings();
 
@@ -17,16 +22,19 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
     if (!shortcut) {
       router.push("/setup");
-    } else {
+    } else if (visitedRoutes.length === 0) {
       setup_shortcut(shortcut);
+      router.push("/hiding");
     }
-  });
+
+    setVisitedRoutes([...visitedRoutes, router.pathname]);
+
+    setCanRender(true);
+  }, []);
 
   return (
     <Provider>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <Layout>{canRender && <Component {...pageProps} />}</Layout>
     </Provider>
   );
 }

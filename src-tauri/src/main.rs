@@ -211,7 +211,6 @@ fn save_to_file(index: usize, path: String) {
             let image = imagedata_to_image(&copied_content.image.clone().unwrap());
             image.save(path).unwrap();
         } else {
-            println!("Saving to file: {}", path);
             let mut file = File::create(path).unwrap();
             file.write_all(copied_content.text.as_bytes()).unwrap();
         }
@@ -234,7 +233,6 @@ fn set_auto_start(value: bool) {
 #[tauri::command(async)]
 fn set_max_items(value: usize) {
     unsafe {
-        println!("max items {}", value);
         MAX_ITEMS = value;
         ensure_max_items();
     }
