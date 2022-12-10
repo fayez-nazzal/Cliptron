@@ -10,7 +10,7 @@ const hidingPage = () => {
     const interval = setInterval(() => {
       setCountdown(countdown - 1);
 
-      if (countdown === 1) {
+      if (countdown === 0) {
         clearInterval(interval);
         hide_window();
         router.push("/");
