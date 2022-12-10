@@ -195,11 +195,25 @@ fn recopy_at_index(index: usize) {
     }
 }
 
+#[cfg(target_os = "linux")]
+fn get_mouse_position_linux() -> (i32, i32) {
+    use enigo::MouseControllable;
+
+    Enigo::new().mouse_location()
+}
+
+#[cfg(any(target_os = "windows", target_os = "macos"))]
+fn get_mouse_position_mac_windows() -> (i32, i32) {
+    Enigo::mouse_location()
+}
+
 #[tauri::command]
 fn get_mouse_position() -> (i32, i32) {
-    let cursor_location: (i32, i32) = Enigo::mouse_location();
+    #[cfg(target_os = "linux")]
+    return get_mouse_position_linux();
 
-    cursor_location
+    #[cfg(any(target_os = "windows", target_os = "macos"))]
+    return get_mouse_position_mac_windows();
 }
 
 #[tauri::command]
