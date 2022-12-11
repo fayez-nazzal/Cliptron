@@ -33,10 +33,10 @@ const App = () => {
         const isImage = item.startsWith("data:image");
 
         return (
-          <div className="relative flex border-b border-gray300-light/80 dark:border-gray300-dark/80 px-2 group transition-all hover:bg-gray50-light dark:bg-gray200-dark">
+          <div className="relative flex border-gray300-light/60 dark:border-gray300-dark/60 m-3 rounded-2xl border-2 group transition-all hover:bg-gray50-light dark:bg-gray200-dark">
             <button
               key={index}
-              className="flex-1 text-left max-h-44 overflow-auto text-black dark:text-white"
+              className="flex-1 text-left max-h-44 overflow-auto text-black dark:text-white p-2"
               onClick={() => recopy_at_index(index)}
             >
               {isImage ? (
@@ -71,6 +71,8 @@ const App = () => {
           </div>
         );
       })}
+
+      <div className="h-1" />
     </div>
   );
 };
