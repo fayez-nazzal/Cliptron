@@ -54,6 +54,7 @@ export const ShortcutInput = ({
 
   const onInputBlur = () => {
     setFocused(false);
+    setUnsavedShortcut("");
   };
 
   return (
