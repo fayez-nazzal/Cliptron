@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { hide_window, on_shortcut } from '../actions/tauri';
-import {invoke} from '@tauri-apps/api/tauri';
 
 const hidingPage = () => {
   const [countdown, setCountdown] = useState(5);

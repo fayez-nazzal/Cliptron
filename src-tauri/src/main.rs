@@ -120,7 +120,7 @@ fn imagedata_to_image(imagedata: &ImageData) -> DynamicImage {
     let image_buffer: Vec<u8> = image_bytes.into_iter().map(|x| *x).collect();
 
     let image = DynamicImage::ImageRgba8(
-        image::RgbaImage::from_raw(image_width, image_height, image_buffer).unwrap(),
+        image::RgbaImage::from_raw(image_width, image_height, image_buffer).expect("Failed to create image"),
     );
 
     image
@@ -253,7 +253,14 @@ fn save_to_file(index: usize, path: String) {
 
         if copied_content.image.is_some() {
             let image = imagedata_to_image(&copied_content.image.clone().unwrap());
-            image.save(path).unwrap();
+            let mut path_with_extension = path.clone();
+            
+            // if path doesn't have an extension, add .png
+            if path_with_extension.split('.').count() == 1 {
+                path_with_extension.push_str(".png");
+            }
+
+            image.save(path_with_extension).unwrap();
         } else {
             let mut file = File::create(path).unwrap();
             file.write_all(copied_content.text.as_bytes()).unwrap();
