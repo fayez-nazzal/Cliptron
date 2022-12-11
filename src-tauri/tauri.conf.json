@@ -21,7 +21,8 @@
       "window": {
         "show": true,
         "hide": true,
-        "setPosition": true
+        "setPosition": true,
+        "setAlwaysOnTop": true
       },
       "dialog": {
         "save": true

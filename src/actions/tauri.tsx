@@ -17,6 +17,7 @@ export const show_window = () => {
   const { appWindow } = require("@tauri-apps/api/window");
 
   appWindow.show();
+  appWindow.setAlwaysOnTop(true);
 };
 
 export const delete_from_history = async (index: number) => {
