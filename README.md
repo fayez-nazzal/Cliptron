@@ -36,7 +36,7 @@ When you are not using Cliptron, you need to hide the window by pressing the "Ex
 
 ## Contributors
 <a href = "https://github.com/fayez-nazzal/cliptron/graphs/contributors">
-  <img src = "https://contrib.rocks/image?repo = fayez-nazzal/cliptron"/>
+  <img src = "https://contrib.rocks/image?repo=fayez-nazzal/Cliptron"/>
 </a>
 
 ## Contribution
