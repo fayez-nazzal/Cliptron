@@ -17,16 +17,17 @@ A tiny cross-platform app that lets you manage your clipboard history with ease 
 
 <ul>
     <li>
-        <strong>Remembers text & images that you copy 📋</strong>: An awesome feature with cliptron is that it remembers all kind of copies, no matter if it is a text or an image.
+        <strong>Remembers text & images that you copy 📋</strong> <br />
+      An awesome feature with cliptron is that it remembers all kind of copies, no matter if it is a text or an image.
     </li>
     <li>
-        <strong>Save what you copy on an individual files ⬇️</strong>: You can save what you copy locally inside a text/image files in the format that you choose!
+        <strong>Save what you copied to individual files ⬇️</strong> <br /> You can save what you copy locally inside a text/image files in the format that you choose!
     </li>
     <li>
-        <strong>Dark/Light Theme support 🌕🌞</strong>: Whatever you prefer.
+        <strong>Dark/Light Theme support 🌕🌞</strong><br />  If you don't care about your eyes.
        </li>
     <li>
-        <strong>Choose your shortcut key #️⃣</strong>: For calling your clipboard history.
+        <strong>Choose your shortcut key #️⃣</strong><br />  Assign a shortcut for calling your clipboard history.
     </li>
 </ul>
 
