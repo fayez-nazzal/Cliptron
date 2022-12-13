@@ -6,8 +6,8 @@ const hidingPage = () => {
   const router = useRouter();
 
   const onHide = () => {
-    hide_window();
     router.push("/");
+    hide_window();
   };
 
   const setHideTimeout = () => {
