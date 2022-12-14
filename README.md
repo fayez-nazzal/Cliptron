@@ -41,9 +41,6 @@ A tiny cross-platform app that lets you manage your clipboard history with ease 
 ## Techs used
 This project is written entirely using [Rust](https://www.rust-lang.org/) & [Next.js](https://vercel.com/solutions/nextjs) by using the power of the awesome [Tauri Toolkit](https://tauri.app/).
 
-## Known Limitation
-When you are not using Cliptron, you need to hide the window by pressing the "Exit ❌" button or re-copying something, otherwise, you might not be able to use the shortcut to call your clipboard. If you find this annoying, let me know and we will find a way to fix it ☝️.
-
 ## Contributors
 <a href = "https://github.com/fayez-nazzal/cliptron/graphs/contributors">
   <img src = "https://contrib.rocks/image?repo=fayez-nazzal/Cliptron"/>

@@ -13,6 +13,17 @@ export const hide_window = () => {
   appWindow.hide();
 };
 
+let listening = false;
+export const hideWhenNotFocused = () => {
+  if (listening) return;
+
+  const { appWindow } = require("@tauri-apps/api/window");
+
+  appWindow.listen("tauri://blur", ({event, payload}) => {
+    hide_window();
+  })
+};
+
 export const show_window = () => {
   const { appWindow } = require("@tauri-apps/api/window");
 
@@ -123,4 +134,5 @@ export const retrieve_settings = async () => {
   );
 
   setup_app_theme();
+  hideWhenNotFocused();
 };
