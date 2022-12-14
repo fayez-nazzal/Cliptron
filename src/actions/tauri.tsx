@@ -121,7 +121,7 @@ export const set_auto_start = async (value: boolean) => {
 export const set_max_items = async (value: number) => {
   localStorage.setItem("max_items", value.toString());
   invoke("set_max_items", { value });
-};
+};  
 
 export const retrieve_settings = async () => {
   set_max_items(+localStorage.getItem("max_items") || 10);
@@ -134,4 +134,7 @@ export const retrieve_settings = async () => {
 
   setup_app_theme();
   hideWhenNotFocused();
+  
+  // Disable right click
+  document.addEventListener('contextmenu', event => event.preventDefault());
 };
