@@ -19,9 +19,8 @@ export const hideWhenNotFocused = () => {
 
   const { appWindow } = require("@tauri-apps/api/window");
 
-  appWindow.listen("tauri://blur", ({event, payload}) => {
-    hide_window();
-  })
+  listening = true;
+  appWindow.listen("tauri://blur", hide_window);
 };
 
 export const show_window = () => {
