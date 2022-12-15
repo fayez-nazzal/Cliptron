@@ -23,10 +23,7 @@ image = "0.24.5"
 base64 = "0.13"
 once_cell = "1.16.0"
 auto-launch = "0.4.0"
-[target.'cfg(target_os = "linux")'.dependencies]
-enigo = { git = "https://github.com/Prunkton/enigo", branch = "master" }
-[else]
-enigo = "0.0.14"
+mouse_position = "0.1.2"
 
 [features]
 # by default Tauri runs in production mode

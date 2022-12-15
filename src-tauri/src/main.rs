@@ -7,7 +7,7 @@ use arboard::Clipboard;
 use arboard::ImageData;
 use auto_launch::*;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
-use enigo::Enigo;
+use mouse_position::mouse_position::{Mouse};
 use image::DynamicImage;
 use image::ImageOutputFormat;
 use once_cell::unsync::Lazy;
@@ -232,18 +232,17 @@ fn get_mouse_position_linux() -> (i32, i32) {
     (x, y)
 }
 
-#[cfg(any(target_os = "windows", target_os = "macos"))]
-fn get_mouse_position_mac_windows() -> (i32, i32) {
-    Enigo::mouse_location()
-}
-
 #[tauri::command]
 fn get_mouse_position() -> (i32, i32) {
-    #[cfg(target_os = "linux")]
-    return get_mouse_position_linux();
+    let position = Mouse::get_mouse_position();
+    let position = match position {
+        Mouse::Position { x, y } => (x, y),
+        Mouse::Error => (0, 0),
+   };
 
-    #[cfg(any(target_os = "windows", target_os = "macos"))]
-    return get_mouse_position_mac_windows();
+   println!("Mouse position: {:?}", position);
+
+    position
 }
 
 #[tauri::command]
