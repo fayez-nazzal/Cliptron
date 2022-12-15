@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { save } from "@tauri-apps/api/dialog";
-import { register, unregister } from "@tauri-apps/api/globalShortcut";
+import { register, unregisterAll } from "@tauri-apps/api/globalShortcut";
 import { emit } from "@tauri-apps/api/event";
 
 export const clear_history = async () => {
@@ -83,11 +83,15 @@ export const on_shortcut = async () => {
   emit("shortcut");
 };
 
+export const unregisterAllShortcuts = async () => {
+  await unregisterAll();
+};
+
 export const setup_shortcut = async (shortcut: string) => {
   const previousShortcut = localStorage.getItem("shortcut");
 
   if (previousShortcut) {
-    await unregister(previousShortcut);
+    await unregisterAllShortcuts();
   }
 
   await register(shortcut, on_shortcut);

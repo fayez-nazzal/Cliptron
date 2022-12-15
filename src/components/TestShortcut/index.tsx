@@ -4,7 +4,7 @@ import { listen } from "@tauri-apps/api/event";
 import { hide_window } from "../../actions/tauri";
 import { useRouter } from "next/router";
 
-export const TestShortcut = ({ onNext }: IStepProps) => {
+export const TestShortcut = ({ onBack, onNext }: IStepProps) => {
   const [shortcutCalled, setShortcutCalled] = useState(false);
   const router = useRouter();
 
@@ -14,14 +14,13 @@ export const TestShortcut = ({ onNext }: IStepProps) => {
 
   const onNextClicked = () => {
     router.push("/");
-    hide_window();
 
     onNext();
   };
 
   return (
     <div className="w-screen h-full flex flex-col text-center items-center">
-      <h1 className="text-2xl mt-4 mb-2">
+      <h1 className="text-2xl mt-5 mb-2">
         {shortcutCalled ? "Your shortcut works 🥳" : "Test your Shortcut!"}
       </h1>
 
@@ -38,13 +37,22 @@ export const TestShortcut = ({ onNext }: IStepProps) => {
         </p>
       </div>
 
-      <button
-        className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 mt-auto mb-20 disabled:opacity-50 hover:brightness-95 active:ring"
-        onClick={onNextClicked}
-        disabled={!shortcutCalled}
-      >
-        Start using Cliptron
-      </button>
+      <div className="flex flex-col gap-2 items-center mt-auto mb-12">
+        <button
+          className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 disabled:opacity-50 hover:brightness-95 active:ring"
+          onClick={onNextClicked}
+          disabled={!shortcutCalled}
+        >
+          Start using Cliptron
+        </button>
+
+        <button
+          className="bg-gray-600 dark:bg-gray-300-dark text-white rounded-lg p-1 w-20 hover:brightness-95 active:ring"
+          onClick={onBack}
+        >
+          Go Back
+        </button>
+      </div>
     </div>
   );
 };

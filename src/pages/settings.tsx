@@ -14,7 +14,7 @@ const SettingsPage = () => {
 
   return (
     <div className="w-screen h-full gap-2 flex flex-col text-center items-center px-6">
-      <h1 className="text-2xl mt-3 mb-1">Settings</h1>
+      <h1 className="text-2xl mt-4 mb-1">Settings</h1>
 
       <SettingsEntry label="App Theme">
         <ThemeToggle />
