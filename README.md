@@ -43,12 +43,12 @@ Check the [Release section](https://github.com/fayez-nazzal/Cliptron/releases) f
 ### Linux - i3wm users
 You can call this app with your custom shortcut right away, no additional configuration required (no need for floating window configs).
 
-## Build From Source
+## Building From Source
 ### Build Requirements
-- [Rust](https://www.rust-lang.org/).
-- [Node.js](https://nodejs.org/en/).
-- For Windows users, you would need [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
-- For Linux users, make sure to install the following dependencies.
+- [Rust](https://www.rust-lang.org/)
+- [Node.js](https://nodejs.org/en/)
+- For Windows users, you would need [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+- For Linux users, make sure to install the following dependencies:
 ```bash
 $ sudo apt update
 $ sudo apt install libwebkit2gtk-4.0-dev build-essential curl wget libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
