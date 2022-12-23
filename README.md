@@ -72,7 +72,7 @@ npm run build
 npm run tauri build
 ```
 
-4. You will find resulting binaries in `cliptron/src-tauri/targer/release`.
+4. You will find resulting binaries in `cliptron/src-tauri/target/release`.
 
 ## Techs used
 This project is written entirely using [Rust](https://www.rust-lang.org/) & [Next.js](https://vercel.com/solutions/nextjs) by using the power of the awesome [Tauri Toolkit](https://tauri.app/).
