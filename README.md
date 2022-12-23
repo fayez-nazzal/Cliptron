@@ -77,11 +77,6 @@ npm run tauri build
 ## Techs used
 This project is written entirely using [Rust](https://www.rust-lang.org/) & [Next.js](https://vercel.com/solutions/nextjs) by using the power of the awesome [Tauri Toolkit](https://tauri.app/).
 
-## Contributors
-<a href = "https://github.com/fayez-nazzal/cliptron/graphs/contributors">
-  <img src = "https://contrib.rocks/image?repo=fayez-nazzal/Cliptron"/>
-</a>
-
 ## TODO List
 - Auto Paste feature.
 - Global shortcut without a requirement to hide the window.
