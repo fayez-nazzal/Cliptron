@@ -34,7 +34,7 @@ A tiny cross-platform app that lets you manage your clipboard history with ease 
 ## Installation
 Check the [Release section](https://github.com/fayez-nazzal/Cliptron/releases) for getting pre-built packages for your operating system.
 
-- For **Linux**, a debian `.deb` package and an `AppImage` is available. If you prefer using AppImages, note that this app, by default is configured to run on your OS startup, with that enabled, you can either keep your AppImage in a fixed place or use an integration tool like [AppImage Launcher](https://github.com/TheAssassin/AppImageLauncher).
+- For **Linux**, a debian `.deb` package is available.
 
 - For **MacOS**, there's a `.dmg` Image file availale in the release section.
 
