@@ -41,7 +41,23 @@ Check the [Release section](https://github.com/fayez-nazzal/Cliptron/releases) f
 - For **Windows**, an installer package `.msi` is available.
 
 ### Linux - i3wm users
+
 You can call this app with your custom shortcut right away, no additional configuration required (no need for floating window configs).
+
+### Linux - AwesomeWM users
+
+Add this config to `awful.rules.rules` in your `~/.config/rc.lua` file
+```lua
+ awful.rules.rules = {
+ ...
+     { rule = { class = "Cliptron" },
+       properites = {
+               floating = true,
+               border_width = 0,
+       }
+ ...
+ },
+```
 
 ## Building From Source
 ### Build Requirements
