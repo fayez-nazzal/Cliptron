@@ -49,7 +49,21 @@ static mut auto_start: Option<AutoLaunch> = None;
 #[derive(Clone, serde::Serialize)]
 struct HistoryEventPayload {}
 
-fn emit_history_event() {
+enum  Event {
+    history,
+    shortcut
+}
+
+impl Event {
+    fn to_string(&self) -> String {
+        match self {
+            Event::history => "history".to_string(),
+            Event::shortcut => "shortcut".to_string(),
+        }
+    }
+}
+
+fn emit_event(event: Event) {
     unsafe {
         GLOBAL_APP_HANDLE
             .handle
@@ -78,7 +92,7 @@ fn add_to_history(text: &String, image: Option<ImageData<'static>>) {
         CLIPBOARD_HISTORY.insert(0, clipboard_content);
 
         ensure_max_items();
-        emit_history_event()
+        emit_event(Event::history)
     }
 }
 
@@ -172,7 +186,7 @@ fn delete_from_history(index: usize) {
     unsafe {
         CLIPBOARD_HISTORY.remove(index);
 
-        emit_history_event()
+        emit_event(Event::history)
     }
 }
 
@@ -181,7 +195,7 @@ fn clear_history() {
     unsafe {
         CLIPBOARD_HISTORY.clear();
 
-        emit_history_event()
+        emit_event(Event::history)
     }
 }
 
@@ -262,7 +276,6 @@ fn on_shortcut() {
 
         let window_size = app_window.inner_size().unwrap();
 
-
         let result = app_window.set_position(tauri::Position::Physical(PhysicalPosition::new(
             mouse_position.0 as i32 - (window_size.width / 2) as i32,
             mouse_position.1 as i32,
@@ -270,14 +283,17 @@ fn on_shortcut() {
 
         if result.is_err() {
             eprintln!("Error: {}", result.err().unwrap());
+            return;
         }
 
-        // show app window
         let result = app_window.show();
 
         if result.is_err() {
             eprintln!("Error: {}", result.err().unwrap());
+            return;
         }
+
+        emit_event(Event::shortcut);
     }
 }
 
