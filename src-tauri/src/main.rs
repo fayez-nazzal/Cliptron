@@ -69,7 +69,7 @@ fn emit_event(event: Event) {
             .handle
             .as_ref()
             .unwrap()
-            .emit_all("history", HistoryEventPayload {})
+            .emit_all(event.to_string().as_str(), HistoryEventPayload {})
             .unwrap();
     }
 }
