@@ -5,7 +5,7 @@ import "../global.css";
 import "@fontsource/open-sans";
 import { useEffect, useState } from "react";
 import { retrieve_settings } from "@actions/tauri";
-import { setup_shortcut } from "@actions/tauri";
+import { register_shortcut } from "@actions/tauri";
 import { useRouter } from "next/router";
 import { hide_window } from "../actions/tauri";
 import { visitedAtom } from "@atoms/visited";
@@ -23,7 +23,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     if (!shortcut) {
       router.push("/setup");
     } else if (visitedRoutes.length === 0) {
-      setup_shortcut(shortcut);
+      register_shortcut(shortcut);
       router.push("/hiding");
     }
 

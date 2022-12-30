@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 import { shortcutAtom } from "@atoms/shortcut";
 import { useState, useEffect } from "react";
 import { useErrorIf } from "../../hooks/useErrorIf";
-import { setup_shortcut } from "../../actions/tauri";
+import { register_shortcut } from "../../actions/tauri";
 import { SettingsEntry } from "@components/SettingsEntry/index";
 
 export const ShortcutSettingsEntry = () => {
@@ -15,7 +15,7 @@ export const ShortcutSettingsEntry = () => {
 
   const onApplyClicked = () => {
     setShortcut(unsavedShortcut);
-    setup_shortcut(unsavedShortcut);
+    register_shortcut(unsavedShortcut);
     setUnsavedShortcut("");
   };
 

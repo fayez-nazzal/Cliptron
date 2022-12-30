@@ -1,4 +1,4 @@
-import { setup_shortcut } from "../../actions/tauri";
+import { register_shortcut } from "../../actions/tauri";
 import { IStepProps } from "@pages/setup";
 import { useState } from "react";
 import { useAtom } from "jotai";
@@ -15,7 +15,7 @@ export const SetupShortcut = ({ onNext }: IStepProps) => {
 
   const onNextClicked = () => {
     setShortcut(unsavedShortcut);
-    setup_shortcut(unsavedShortcut);
+    register_shortcut(unsavedShortcut);
     onNext();
   };
 

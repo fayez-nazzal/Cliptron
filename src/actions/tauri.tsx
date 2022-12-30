@@ -64,12 +64,20 @@ export const save_to_file = async (index: number, is_image: boolean) => {
   }
 };
 
-export const setup_shortcut = async (shortcut: string) => {
+export const register_shortcut = async (shortcut: string) => {
   const previousShortcut = localStorage.getItem("shortcut");
 
   await invoke("register_shortcut", { shortcut, previousShortcut });
 
   localStorage.setItem("shortcut", shortcut);
+};
+
+export const unregister_current_shortcut = async () => {
+  const shortcut = localStorage.getItem("shortcut");
+
+  await invoke("unregister_shortcut", { shortcut });
+
+  localStorage.removeItem("shortcut");
 };
 
 export const get_app_theme = () => {

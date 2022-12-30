@@ -316,6 +316,18 @@ fn register_shortcut(shortcut: &str, previous_shortcut: Option<&str>) {
     }
 }
 
+#[tauri::command(async)]
+fn unregister_shortcut(shortcut: &str) {
+    // get global app handle
+    unsafe {
+        let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
+
+        app.global_shortcut_manager()
+            .unregister(shortcut)
+            .unwrap();
+    }
+}
+
 fn main() {
     thread::spawn(|| {
         let result = Master::new(Handler).run();
@@ -386,7 +398,8 @@ fn main() {
             save_to_file,
             set_auto_start,
             set_max_items,
-            register_shortcut
+            register_shortcut,
+            unregister_shortcut
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
