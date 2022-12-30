@@ -1,19 +1,10 @@
-<!-- markdownlint-configure-file {
-  "MD013": {
-    "code_blocks": false,
-    "tables": false
-  },
-  "MD033": false,
-  "MD041": false
-} -->
 # Cliptron
 
 <div align="left">
 
-A tiny cross-platform app that lets you manage your clipboard history with ease 📋⏱️🍰
+A tiny app to manage your clipboard history ease, works for Windows, MacOS, and Linux.
 
-<img width="380px" align="right"
-     alt="Astonish Logo" style="margin-left: 16px;" src="screenshot.png" />
+<img width="380px" align="right" style="margin-left: 16px;" src="screenshot.png" />
 
 <ul>
     <li>
