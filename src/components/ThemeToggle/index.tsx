@@ -15,7 +15,7 @@ export const ThemeToggle = () => {
 
   return (
     <button
-      className="flex gap-1 items-center text-black dark:text-white hover:bg-gray300-light dark:hover:bg-gray200-dark p-1 rounded-lg w-24 flex justify-center"
+      className="flex gap-1 items-center text-black dark:text-white hover:bg-gray300-light dark:hover:bg-gray200-dark p-1 rounded-lg w-24 justify-center"
       onClick={toggleTheme}
     >
       {theme === "dark" ? (

@@ -72,12 +72,22 @@ export const setup_shortcut = async (shortcut: string) => {
   localStorage.setItem("shortcut", shortcut);
 };
 
-export const setup_app_theme = async () => {
+export const get_app_theme = () => {
   if (
     localStorage.getItem("theme") === "dark" ||
     (!("theme" in localStorage) &&
       window.matchMedia("(prefers-color-scheme: dark)").matches)
   ) {
+    return "dark";
+  } else {
+    return "light";
+  }
+};
+
+export const setup_app_theme = async () => {
+  const theme = get_app_theme();
+
+  if (theme === "dark") {
     document.documentElement.classList.add("dark");
     localStorage.setItem("theme", "dark");
   } else {
@@ -98,7 +108,7 @@ export const set_auto_start = async (value: boolean) => {
 export const set_max_items = async (value: number) => {
   localStorage.setItem("max_items", value.toString());
   invoke("set_max_items", { value });
-};  
+};
 
 export const retrieve_settings = async () => {
   set_max_items(+localStorage.getItem("max_items") || 10);
@@ -111,7 +121,7 @@ export const retrieve_settings = async () => {
 
   setup_app_theme();
   hideWhenNotFocused();
-  
+
   // Disable right click
-  document.addEventListener('contextmenu', event => event.preventDefault());
+  document.addEventListener("contextmenu", (event) => event.preventDefault());
 };
