@@ -7,9 +7,9 @@ use arboard::Clipboard;
 use arboard::ImageData;
 use auto_launch::*;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
-use mouse_position::mouse_position::{Mouse};
 use image::DynamicImage;
 use image::ImageOutputFormat;
+use mouse_position::mouse_position::Mouse;
 use once_cell::unsync::Lazy;
 use std::env::current_exe;
 use std::fs::File;
@@ -18,6 +18,8 @@ use std::io::Cursor;
 use std::io::Write;
 use std::thread;
 use tauri::AppHandle;
+use tauri::GlobalShortcutManager;
+use tauri::LogicalPosition;
 use tauri::Manager;
 use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
@@ -120,7 +122,8 @@ fn imagedata_to_image(imagedata: &ImageData) -> DynamicImage {
     let image_buffer: Vec<u8> = image_bytes.into_iter().map(|x| *x).collect();
 
     let image = DynamicImage::ImageRgba8(
-        image::RgbaImage::from_raw(image_width, image_height, image_buffer).expect("Failed to create image"),
+        image::RgbaImage::from_raw(image_width, image_height, image_buffer)
+            .expect("Failed to create image"),
     );
 
     image
@@ -197,14 +200,11 @@ fn recopy_at_index(index: usize) {
 
 #[tauri::command]
 fn get_mouse_position() -> (i32, i32) {
-    print!("Getting mouse position... ");
     let position = Mouse::get_mouse_position();
     let position = match position {
         Mouse::Position { x, y } => (x, y),
         Mouse::Error => (0, 0),
-   };
-
-   println!("Mouse position: {:?}", position);
+    };
 
     position
 }
@@ -217,7 +217,7 @@ fn save_to_file(index: usize, path: String) {
         if copied_content.image.is_some() {
             let image = imagedata_to_image(&copied_content.image.clone().unwrap());
             let mut path_with_extension = path.clone();
-            
+
             // if path doesn't have an extension, add .png
             if path_with_extension.split('.').count() == 1 {
                 path_with_extension.push_str(".png");
@@ -249,6 +249,51 @@ fn set_max_items(value: usize) {
     unsafe {
         MAX_ITEMS = value;
         ensure_max_items();
+    }
+}
+
+fn on_shortcut() {
+    unsafe {
+        let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
+
+        let mouse_position = get_mouse_position();
+
+        let app_window = app.get_window("main").unwrap();
+
+        let result = app_window.set_position(tauri::Position::Logical(LogicalPosition::new(
+            mouse_position.0 as f64,
+            mouse_position.1 as f64,
+        )));
+
+        if result.is_err() {
+            eprintln!("Error: {}", result.err().unwrap());
+        }
+
+        // show app window
+        let result = app_window.show();
+
+        if result.is_err() {
+            eprintln!("Error: {}", result.err().unwrap());
+        }
+    }
+}
+
+#[tauri::command(async)]
+fn register_shortcut(shortcut: &str, previous_shortcut: Option<&str>) {
+    // get global app handle
+    unsafe {
+        let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
+
+        // unregister previous shortcut
+        if previous_shortcut.is_some() {
+            app.global_shortcut_manager()
+                .unregister(previous_shortcut.unwrap())
+                .unwrap();
+        }
+
+        app.global_shortcut_manager()
+            .register(shortcut, move || on_shortcut())
+            .unwrap();
     }
 }
 
@@ -321,7 +366,8 @@ fn main() {
             recopy_at_index,
             save_to_file,
             set_auto_start,
-            set_max_items
+            set_max_items,
+            register_shortcut
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

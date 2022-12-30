@@ -1,7 +1,5 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { save } from "@tauri-apps/api/dialog";
-import { register, unregisterAll } from "@tauri-apps/api/globalShortcut";
-import { emit } from "@tauri-apps/api/event";
 
 export const clear_history = async () => {
   await invoke("clear_history");
@@ -66,35 +64,10 @@ export const save_to_file = async (index: number, is_image: boolean) => {
   }
 };
 
-export const on_shortcut = async () => {
-  const mouse_position = (await invoke("get_mouse_position")) as [
-    number,
-    number
-  ];
-
-  const { appWindow, LogicalPosition } = require("@tauri-apps/api/window");
-
-  appWindow.setPosition(
-    new LogicalPosition(mouse_position[0] - 150, mouse_position[1] + 25)
-  );
-
-  appWindow.show();
-
-  emit("shortcut");
-};
-
-export const unregisterAllShortcuts = async () => {
-  await unregisterAll();
-};
-
 export const setup_shortcut = async (shortcut: string) => {
   const previousShortcut = localStorage.getItem("shortcut");
 
-  if (previousShortcut) {
-    await unregisterAllShortcuts();
-  }
-
-  await register(shortcut, on_shortcut);
+  await invoke("register_shortcut", { shortcut, previousShortcut });
 
   localStorage.setItem("shortcut", shortcut);
 };
