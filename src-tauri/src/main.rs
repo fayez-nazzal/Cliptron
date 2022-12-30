@@ -50,15 +50,15 @@ static mut auto_start: Option<AutoLaunch> = None;
 struct HistoryEventPayload {}
 
 enum  Event {
-    history,
-    shortcut
+    History,
+    Shortcut
 }
 
 impl Event {
     fn to_string(&self) -> String {
         match self {
-            Event::history => "history".to_string(),
-            Event::shortcut => "shortcut".to_string(),
+            Event::History => "history".to_string(),
+            Event::Shortcut => "shortcut".to_string(),
         }
     }
 }
@@ -92,7 +92,7 @@ fn add_to_history(text: &String, image: Option<ImageData<'static>>) {
         CLIPBOARD_HISTORY.insert(0, clipboard_content);
 
         ensure_max_items();
-        emit_event(Event::history)
+        emit_event(Event::History)
     }
 }
 
@@ -186,7 +186,7 @@ fn delete_from_history(index: usize) {
     unsafe {
         CLIPBOARD_HISTORY.remove(index);
 
-        emit_event(Event::history)
+        emit_event(Event::History)
     }
 }
 
@@ -195,7 +195,7 @@ fn clear_history() {
     unsafe {
         CLIPBOARD_HISTORY.clear();
 
-        emit_event(Event::history)
+        emit_event(Event::History)
     }
 }
 
@@ -293,7 +293,7 @@ fn on_shortcut() {
             return;
         }
 
-        emit_event(Event::shortcut);
+        emit_event(Event::Shortcut);
     }
 }
 
