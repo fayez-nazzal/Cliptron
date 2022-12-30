@@ -16,7 +16,7 @@ export const SetupShortcut = ({ onNext }: IStepProps) => {
   const onNextClicked = () => {
     setShortcut(unsavedShortcut);
     register_shortcut(unsavedShortcut);
-    onNext();
+    !isError && onNext();
   };
 
   return (
