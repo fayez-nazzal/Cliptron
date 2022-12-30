@@ -74,9 +74,10 @@ export const setup_shortcut = async (shortcut: string) => {
 
 export const get_app_theme = () => {
   if (
-    localStorage.getItem("theme") === "dark" ||
-    (!("theme" in localStorage) &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches)
+    typeof localStorage !== "undefined" &&
+    (localStorage.getItem("theme") === "dark" ||
+      (!("theme" in localStorage) &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches))
   ) {
     return "dark";
   } else {

@@ -2,7 +2,6 @@ import { SetupShortcut } from "@components/SetupShortcut";
 import { useState, useEffect } from "react";
 import { TestShortcut } from "../components/TestShortcut/index";
 import { show_window } from "@actions/tauri";
-import { unregisterAllShortcuts } from "@actions/tauri";
 
 export interface IStepProps {
   onNext: () => void;
@@ -27,7 +26,6 @@ const SetupPage = () => {
 
   const onBack = async () => {
     if (currentStep - 1 >= 0) {
-      await unregisterAllShortcuts();
       setCurrentStep(currentStep - 1);
     }
   };
