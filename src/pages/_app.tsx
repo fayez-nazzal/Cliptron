@@ -18,12 +18,12 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     retrieve_settings();
 
-    const shortcut = localStorage.getItem("shortcut");
+    const was_set_up = localStorage.getItem("set_up");
 
-    if (!shortcut) {
+    if (!was_set_up) {
       router.push("/setup");
     } else if (visitedRoutes.length === 0) {
-      register_shortcut(shortcut);
+      register_shortcut(was_set_up);
       router.push("/hiding");
     }
 

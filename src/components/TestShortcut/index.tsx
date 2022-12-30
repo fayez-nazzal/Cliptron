@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { IStepProps } from "@pages/setup";
 import { listen } from "@tauri-apps/api/event";
-import { hide_window } from "../../actions/tauri";
 import { useRouter } from "next/router";
 
 export const TestShortcut = ({ onBack, onNext }: IStepProps) => {
@@ -13,6 +12,7 @@ export const TestShortcut = ({ onBack, onNext }: IStepProps) => {
   }, []);
 
   const onNextClicked = () => {
+    localStorage.setItem("set_up", "true");
     router.push("/");
 
     onNext();
