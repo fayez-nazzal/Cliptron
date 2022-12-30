@@ -11,6 +11,7 @@ use image::DynamicImage;
 use image::ImageOutputFormat;
 use mouse_position::mouse_position::Mouse;
 use once_cell::unsync::Lazy;
+use tauri::PhysicalPosition;
 use std::env::current_exe;
 use std::fs::File;
 use std::io;
@@ -19,7 +20,6 @@ use std::io::Write;
 use std::thread;
 use tauri::AppHandle;
 use tauri::GlobalShortcutManager;
-use tauri::LogicalPosition;
 use tauri::Manager;
 use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
@@ -260,9 +260,12 @@ fn on_shortcut() {
 
         let app_window = app.get_window("main").unwrap();
 
-        let result = app_window.set_position(tauri::Position::Logical(LogicalPosition::new(
-            mouse_position.0 as f64,
-            mouse_position.1 as f64,
+        let window_size = app_window.inner_size().unwrap();
+
+
+        let result = app_window.set_position(tauri::Position::Physical(PhysicalPosition::new(
+            mouse_position.0 as i32 - (window_size.width / 2) as i32,
+            mouse_position.1 as i32,
         )));
 
         if result.is_err() {
