@@ -34,7 +34,7 @@ A tiny cross-platform app that lets you manage your clipboard history with ease 
 ## Installation
 Check the [Release section](https://github.com/fayez-nazzal/Cliptron/releases) for getting pre-built packages for your operating system.
 
-- For **Linux**, a debian `.deb` package is available.
+- For **Linux**, a debian `.deb`, and an Arch Linux `.zst` packages are available.
 
 - For **MacOS**, there's a `.dmg` Image file availale in the release section.
 
