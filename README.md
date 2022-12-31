@@ -2,7 +2,7 @@
 
 <div align="left">
 
-A tiny app to manage your clipboard history ease, works for Windows, MacOS, and Linux.
+A tiny app to manage your clipboard history, works for Windows, MacOS, and Linux.
 
 <img width="380px" align="right" style="margin-left: 16px;" src="screenshot.png" />
 
