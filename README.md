@@ -39,13 +39,29 @@ You can call this app with your custom shortcut right away, no additional config
 
 Add this config to `awful.rules.rules` in your `~/.config/rc.lua` file
 ```lua
+-- A function to add a titlebar for a window
+function titlebar_add_with_settings(c)
+     awful.titlebar.add(c, { modkey = modkey, height = 16, font = "Terminus 6" })
+ end
+ ...
+ -- {{{ Rules
+ -- Rules to apply to new clients (through the "manage" signal).
  awful.rules.rules = {
  ...
+     { rule_any = {type = { "normal", "dialog" }}, 
+       properties = { titlebars_enabled = false }
+     },
+     { rule = {},
+       -- Add titlebar to all windows except cliptron
+       except_any = { class = { "Alacritty", "Cliptron", "cliptron" } },
+                     callback = titlebar_add_with_settings
+     },
      { rule = { class = "Cliptron" },
        properites = {
                floating = true,
                border_width = 0,
        }
+      }
  ...
  },
 ```
