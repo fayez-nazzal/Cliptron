@@ -18,12 +18,14 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const onAppStart = async () => {
     retrieve_settings();
 
-    const previousShortcut = localStorage.getItem("set_up");
+    const wasSetUp = localStorage.getItem("set_up");
+    const shortcut = localStorage.getItem("shortcut");
 
-    if (!previousShortcut) {
+    if (!wasSetUp || !shortcut) {
       router.push("/setup");
     } else if (visitedRoutes.length === 0) {
-      await register_shortcut(previousShortcut);
+      // we register only in the startup ( when having no visitedRoutes )
+      await register_shortcut(shortcut);
       router.push("/hiding");
     }
 
