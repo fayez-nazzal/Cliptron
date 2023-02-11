@@ -299,6 +299,8 @@ fn on_shortcut() {
 
 #[tauri::command(async)]
 fn register_shortcut(shortcut: &str, previous_shortcut: Option<&str>) {
+    println!("register called with {}", shortcut);
+    
     // get global app handle
     unsafe {
         let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
