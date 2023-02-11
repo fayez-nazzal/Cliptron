@@ -15,21 +15,25 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const [canRender, setCanRender] = useState(false);
   const [visitedRoutes, setVisitedRoutes] = useAtom(visitedAtom);
 
-  useEffect(() => {
+  const onAppStart = async () => {
     retrieve_settings();
 
-    const was_set_up = localStorage.getItem("set_up");
+    const previousShortcut = localStorage.getItem("set_up");
 
-    if (!was_set_up) {
+    if (!previousShortcut) {
       router.push("/setup");
     } else if (visitedRoutes.length === 0) {
-      register_shortcut(was_set_up);
+      await register_shortcut(previousShortcut);
       router.push("/hiding");
     }
 
     setVisitedRoutes([...visitedRoutes, router.pathname]);
 
     setCanRender(true);
+  };
+  
+  useEffect(() => {
+    onAppStart();
   }, []);
 
   return (
