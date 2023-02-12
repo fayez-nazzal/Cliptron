@@ -199,6 +199,8 @@ fn clear_history() {
     }
 }
 
+use winapi::um::winuser::{keybd_event, VK_CONTROL, KEYEVENTF_EXTENDEDKEY};
+
 #[tauri::command(async)]
 fn recopy_at_index(index: usize) {
     unsafe {
@@ -209,7 +211,17 @@ fn recopy_at_index(index: usize) {
         } else {
             CLIPBOARD.set_text(copied_content.text.clone());
         }
+
+        let timeout = std::time::Duration::from_millis(100);
+        thread::sleep(timeout);    
+        if cfg!(target_os = "windows") {
+            keybd_event(VK_CONTROL as u8, 0, 0, 0);
+            keybd_event(86, 0, KEYEVENTF_EXTENDEDKEY, 0);
+            keybd_event(86, 0, KEYEVENTF_EXTENDEDKEY | winapi::um::winuser::KEYEVENTF_KEYUP, 0);
+            keybd_event(VK_CONTROL as u8, 0, winapi::um::winuser::KEYEVENTF_KEYUP, 0);
+        }
     }
+
 }
 
 #[tauri::command]
