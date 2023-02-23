@@ -6,9 +6,7 @@ export const clear_history = async () => {
 };
 
 export const hide_window = () => {
-  const { appWindow } = require("@tauri-apps/api/window");
-
-  appWindow.hide();
+  invoke("hide_window");
 };
 
 let listening = false;
@@ -40,8 +38,6 @@ export const get_history = async () => {
 
 export const recopy_at_index = async (index: number) => {
   invoke("recopy_at_index", { index });
-
-  hide_window();
 };
 
 export const save_to_file = async (index: number, is_image: boolean) => {

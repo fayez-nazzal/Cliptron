@@ -11,16 +11,19 @@ use image::DynamicImage;
 use image::ImageOutputFormat;
 use mouse_position::mouse_position::Mouse;
 use once_cell::unsync::Lazy;
-use tauri::PhysicalPosition;
 use std::env::current_exe;
 use std::fs::File;
 use std::io;
 use std::io::Cursor;
 use std::io::Write;
+use std::process::Command;
 use std::thread;
+use std::thread::sleep;
+use std::time::Duration;
 use tauri::AppHandle;
 use tauri::GlobalShortcutManager;
 use tauri::Manager;
+use tauri::PhysicalPosition;
 use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 struct ClipboardContent {
@@ -35,6 +38,8 @@ static mut CLIPBOARD: once_cell::unsync::Lazy<arboard::Clipboard> = Lazy::new(||
     clipboard
 });
 
+static mut LAST_ACTIVE_WINDOW_ID: once_cell::unsync::Lazy<String> = Lazy::new(|| "".to_string());
+static mut LAST_ACTIVE_ELEMENT_NAME: once_cell::unsync::Lazy<String> = Lazy::new(|| "".to_string());
 static mut MAX_ITEMS: usize = 10;
 
 struct GlobalAppHandle {
@@ -49,9 +54,9 @@ static mut auto_start: Option<AutoLaunch> = None;
 #[derive(Clone, serde::Serialize)]
 struct HistoryEventPayload {}
 
-enum  Event {
+enum Event {
     History,
-    Shortcut
+    Shortcut,
 }
 
 impl Event {
@@ -199,7 +204,8 @@ fn clear_history() {
     }
 }
 
-use winapi::um::winuser::{keybd_event, VK_CONTROL, KEYEVENTF_EXTENDEDKEY};
+#[cfg(target_os = "windows")]
+use winapi::um::winuser::{keybd_event, KEYEVENTF_EXTENDEDKEY, VK_CONTROL};
 
 #[tauri::command(async)]
 fn recopy_at_index(index: usize) {
@@ -212,16 +218,32 @@ fn recopy_at_index(index: usize) {
             CLIPBOARD.set_text(copied_content.text.clone());
         }
 
-        let timeout = std::time::Duration::from_millis(100);
-        thread::sleep(timeout);    
-        if cfg!(target_os = "windows") {
+        hide_window();
+
+        let timeout = std::time::Duration::from_millis(10);
+        thread::sleep(timeout);
+
+        #[cfg(target_os = "windows")]
+        {
             keybd_event(VK_CONTROL as u8, 0, 0, 0);
             keybd_event(86, 0, KEYEVENTF_EXTENDEDKEY, 0);
-            keybd_event(86, 0, KEYEVENTF_EXTENDEDKEY | winapi::um::winuser::KEYEVENTF_KEYUP, 0);
+            keybd_event(
+                86,
+                0,
+                KEYEVENTF_EXTENDEDKEY | winapi::um::winuser::KEYEVENTF_KEYUP,
+                0,
+            );
             keybd_event(VK_CONTROL as u8, 0, winapi::um::winuser::KEYEVENTF_KEYUP, 0);
         }
-    }
 
+        #[cfg(target_os = "linux")]
+        {
+            Command::new("xdotool")
+            .args(&["key", "ctrl+v"])
+            .output()
+            .expect("Failed to simulate Ctrl+V key press");        
+        }
+    }
 }
 
 #[tauri::command]
@@ -280,6 +302,55 @@ fn set_max_items(value: usize) {
 
 fn on_shortcut() {
     unsafe {
+        // Check if OS is linux
+        if cfg!(target_os = "linux") {
+            // Store the current focused window and its active element
+
+            // let active_element_name_output = Command::new("xprop")
+            //     .args(&["-id", &active_win_id, "_NET_WM_NAME"])
+            //     .output()
+            //     .expect("Failed to get active element name");
+            // let active_element_name = String::from_utf8_lossy(&active_element_name_output.stdout)
+            //     .trim()
+            //     .split("=")
+            //     .nth(1)
+            //     .expect("Failed to parse active element name")
+            //     .trim()
+            //     .to_string();
+
+            unsafe {
+                LAST_ACTIVE_WINDOW_ID = Lazy::new(|| {
+                    let active_win_id_output = Command::new("xdotool")
+                        .args(&["getactivewindow"])
+                        .output()
+                        .expect("Failed to get active window ID");
+                    let active_win_id = String::from_utf8_lossy(&active_win_id_output.stdout)
+                        .trim()
+                        .to_string();
+
+                    active_win_id
+                });
+
+                println!("Active window ID: {:?}", LAST_ACTIVE_WINDOW_ID);
+
+                LAST_ACTIVE_ELEMENT_NAME = Lazy::new(|| {
+                    let active_element_name_output = Command::new("xprop")
+                        .args(&["-id", &LAST_ACTIVE_WINDOW_ID, "_NET_WM_NAME"])
+                        .output()
+                        .expect("Failed to get active element name");
+                    let active_element_name =
+                        String::from_utf8_lossy(&active_element_name_output.stdout)
+                            .to_string();
+                    active_element_name
+                });
+
+                println!(
+                    "Active element name: {}",
+                    LAST_ACTIVE_ELEMENT_NAME.to_string()
+                );
+            }
+        }
+
         let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
 
         let mouse_position = get_mouse_position();
@@ -309,10 +380,71 @@ fn on_shortcut() {
     }
 }
 
+#[tauri::command]
+fn hide_window() {
+    print!("hide called\n");
+    unsafe {
+        let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
+
+        sleep(Duration::from_millis(10));
+
+        let app_window = app.get_window("main").unwrap();
+        let result = app_window.hide();
+
+        if result.is_err() {
+            eprintln!("Error: {}", result.err().unwrap());
+            return;
+        }
+
+        if LAST_ACTIVE_ELEMENT_NAME.to_string() == "" {
+            return;
+        }
+
+        // check if LAST_ACTIVE_WINDOW_ID is set and LAST_ACTIVE_ELEMENT_NAME is set
+        // Restore the previously focused window and its active element
+        Command::new("xdotool")
+            .args(&["windowactivate", &LAST_ACTIVE_WINDOW_ID.to_string()])
+            .output()
+            .expect("Failed to activate previous window");
+        Command::new("xdotool")
+            .args(&["windowfocus", &LAST_ACTIVE_WINDOW_ID.to_string()])
+            .output()
+            .expect("Failed to focus previous window");
+
+        // Wait for the window to become active and then search for the element by name
+        loop {
+            let win_name_output = Command::new("xprop")
+                .args(&["-id", &LAST_ACTIVE_WINDOW_ID.to_string(), "_NET_WM_NAME"])
+                .output()
+                .expect("Failed to get window name");
+            let win_name = String::from_utf8_lossy(&win_name_output.stdout)
+                .trim()
+                .to_string();
+
+            println!("Comparing \"{}\" to \"{}\"", win_name, LAST_ACTIVE_ELEMENT_NAME.to_string());
+            if win_name.trim() == LAST_ACTIVE_ELEMENT_NAME.to_string().trim() {
+                break;
+            }
+            sleep(Duration::from_millis(10));
+        }
+
+        Command::new("xdotool")
+            .args(&[
+                "search",
+                "--name",
+                &LAST_ACTIVE_ELEMENT_NAME.to_string(),
+                "windowactivate",
+                "--sync",
+            ])
+            .output()
+            .expect("Failed to activate element window");
+    }
+}
+
 #[tauri::command(async)]
 fn register_shortcut(shortcut: &str, previous_shortcut: Option<&str>) {
     println!("register called with {}", shortcut);
-    
+
     // get global app handle
     unsafe {
         let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
@@ -336,9 +468,7 @@ fn unregister_shortcut(shortcut: &str) {
     unsafe {
         let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
 
-        app.global_shortcut_manager()
-            .unregister(shortcut)
-            .unwrap();
+        app.global_shortcut_manager().unregister(shortcut).unwrap();
     }
 }
 
@@ -413,7 +543,8 @@ fn main() {
             set_auto_start,
             set_max_items,
             register_shortcut,
-            unregister_shortcut
+            unregister_shortcut,
+            hide_window,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
