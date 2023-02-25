@@ -25,9 +25,11 @@ use crate::commands::delete_from_history;
 use crate::commands::get_history;
 use crate::commands::get_mouse_position;
 use crate::commands::recopy_at_index;
+use crate::commands::register_shortcut;
 use crate::commands::save_to_file;
 use crate::commands::set_auto_start;
 use crate::commands::set_max_items;
+use crate::commands::unregister_shortcut;
 mod commands;
 
 struct ClipboardContent {
@@ -210,39 +212,6 @@ fn on_shortcut() {
         }
 
         emit_event(Event::Shortcut);
-    }
-}
-
-#[tauri::command(async)]
-fn register_shortcut(shortcut: &str, previous_shortcut: Option<&str>) {
-    println!("register called with {}", shortcut);
-    
-    // get global app handle
-    unsafe {
-        let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
-
-        // unregister previous shortcut
-        if previous_shortcut.is_some() {
-            app.global_shortcut_manager()
-                .unregister(previous_shortcut.unwrap())
-                .unwrap();
-        }
-
-        app.global_shortcut_manager()
-            .register(shortcut, move || on_shortcut())
-            .unwrap();
-    }
-}
-
-#[tauri::command(async)]
-fn unregister_shortcut(shortcut: &str) {
-    // get global app handle
-    unsafe {
-        let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
-
-        app.global_shortcut_manager()
-            .unregister(shortcut)
-            .unwrap();
     }
 }
 

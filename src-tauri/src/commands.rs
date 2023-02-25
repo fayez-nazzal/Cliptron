@@ -1,8 +1,9 @@
 use std::{thread, fs::File, io::Write};
 
 use mouse_position::mouse_position::Mouse;
+use tauri::GlobalShortcutManager;
 
-use crate::{CLIPBOARD, CLIPBOARD_HISTORY, imagedata_to_image, AUTO_START, MAX_ITEMS, ensure_max_items, emit_event, Event};
+use crate::{CLIPBOARD, CLIPBOARD_HISTORY, imagedata_to_image, AUTO_START, MAX_ITEMS, ensure_max_items, emit_event, Event, GLOBAL_APP_HANDLE, on_shortcut};
 
 #[tauri::command(async)]
 pub fn recopy_at_index(index: usize) {
@@ -110,5 +111,38 @@ pub fn clear_history() {
         CLIPBOARD_HISTORY.clear();
 
         emit_event(Event::History)
+    }
+}
+
+#[tauri::command(async)]
+pub fn register_shortcut(shortcut: &str, previous_shortcut: Option<&str>) {
+    println!("register called with {}", shortcut);
+    
+    // get global app handle
+    unsafe {
+        let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
+
+        // unregister previous shortcut
+        if previous_shortcut.is_some() {
+            app.global_shortcut_manager()
+                .unregister(previous_shortcut.unwrap())
+                .unwrap();
+        }
+
+        app.global_shortcut_manager()
+            .register(shortcut, move || on_shortcut())
+            .unwrap();
+    }
+}
+
+#[tauri::command(async)]
+pub fn unregister_shortcut(shortcut: &str) {
+    // get global app handle
+    unsafe {
+        let app = GLOBAL_APP_HANDLE.handle.as_ref().unwrap();
+
+        app.global_shortcut_manager()
+            .unregister(shortcut)
+            .unwrap();
     }
 }
