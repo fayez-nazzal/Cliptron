@@ -4,19 +4,15 @@
 )]
 
 use arboard::Clipboard;
-use arboard::ImageData;
 use auto_launch::*;
-use clipboard_master::{CallbackResult, ClipboardHandler, Master};
-use image::DynamicImage;
-use image::ImageOutputFormat;
+use clipboard_master::{Master};
+use master::CLIPBOARD_HISTORY;
+use master::Handler;
 use once_cell::unsync::Lazy;
 use tauri::PhysicalPosition;
 use std::env::current_exe;
-use std::io;
-use std::io::Cursor;
 use std::thread;
 use tauri::AppHandle;
-use tauri::GlobalShortcutManager;
 use tauri::Manager;
 use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
@@ -30,21 +26,15 @@ use crate::commands::save_to_file;
 use crate::commands::set_auto_start;
 use crate::commands::set_max_items;
 use crate::commands::unregister_shortcut;
+
 mod commands;
-
-struct ClipboardContent {
-    text: String,
-    image: Option<ImageData<'static>>,
-}
-
-static mut CLIPBOARD_HISTORY: Vec<ClipboardContent> = Vec::new();
+mod master;
+mod img;
 
 static mut CLIPBOARD: once_cell::unsync::Lazy<arboard::Clipboard> = Lazy::new(|| {
     let clipboard = Clipboard::new().unwrap();
     clipboard
 });
-
-static mut MAX_ITEMS: usize = 10;
 
 struct GlobalAppHandle {
     handle: Option<AppHandle>,
@@ -82,107 +72,6 @@ fn emit_event(event: Event) {
             .unwrap();
     }
 }
-
-fn ensure_max_items() {
-    unsafe {
-        if CLIPBOARD_HISTORY.len() > MAX_ITEMS {
-            CLIPBOARD_HISTORY.remove(CLIPBOARD_HISTORY.len() - 1);
-        }
-    }
-}
-
-fn add_to_history(text: &String, image: Option<ImageData<'static>>) {
-    let clipboard_content = ClipboardContent {
-        text: text.clone(),
-        image: image.clone(),
-    };
-
-    unsafe {
-        CLIPBOARD_HISTORY.insert(0, clipboard_content);
-
-        ensure_max_items();
-        emit_event(Event::History)
-    }
-}
-
-fn image_to_base64(img: &DynamicImage) -> String {
-    let mut img = img.clone();
-    let max_width = 180;
-    let max_height = 160;
-    let img_width = img.width();
-    let img_height = img.height();
-
-    if img_width > max_width || img_height > max_height {
-        let ratio = img_width as f32 / img_height as f32;
-        let mut new_width = max_width as f32;
-        let mut new_height = new_width / ratio;
-
-        if new_height > max_height as f32 {
-            new_height = max_height as f32;
-            new_width = new_height * ratio;
-        }
-
-        img = img.resize(
-            new_width as u32,
-            new_height as u32,
-            image::imageops::FilterType::Nearest,
-        );
-    }
-
-    let mut image_data: Vec<u8> = Vec::new();
-    img.write_to(&mut Cursor::new(&mut image_data), ImageOutputFormat::Png)
-        .unwrap();
-
-    let res_base64 = base64::encode(image_data);
-    format!("data:image/png;base64,{}", res_base64)
-}
-
-fn imagedata_to_image(imagedata: &ImageData) -> DynamicImage {
-    let image_bytes = &imagedata.bytes;
-    let image_width = imagedata.width as u32;
-    let image_height = imagedata.height as u32;
-
-    let image_buffer: Vec<u8> = image_bytes.into_iter().map(|x| *x).collect();
-
-    let image = DynamicImage::ImageRgba8(
-        image::RgbaImage::from_raw(image_width, image_height, image_buffer)
-            .expect("Failed to create image"),
-    );
-
-    image
-}
-
-struct Handler;
-
-impl ClipboardHandler for Handler {
-    fn on_clipboard_change(&mut self) -> CallbackResult {
-        unsafe {
-            let copied_text_result = CLIPBOARD.get_text();
-            let copied_image_result = CLIPBOARD.get_image();
-
-            let copied_text;
-
-            if copied_image_result.is_ok() {
-                let copied_image = copied_image_result.unwrap();
-                let image = imagedata_to_image(&copied_image);
-                let image_base64 = image_to_base64(&image);
-
-                add_to_history(&image_base64, Some(copied_image));
-            } else if copied_text_result.is_ok() {
-                copied_text = copied_text_result.unwrap();
-                add_to_history(&copied_text, None);
-            }
-        }
-
-        CallbackResult::Next
-    }
-
-    fn on_clipboard_error(&mut self, error: io::Error) -> CallbackResult {
-        eprintln!("Error: {}", error);
-        CallbackResult::Next
-    }
-}
-
 
 fn on_shortcut() {
     unsafe {
