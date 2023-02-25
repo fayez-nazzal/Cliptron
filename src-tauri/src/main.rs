@@ -3,20 +3,6 @@
     windows_subsystem = "windows"
 )]
 
-use auto_launch::*;
-use clipboard_master::Master;
-use master::Handler;
-use master::CLIPBOARD_HISTORY;
-use once_cell::unsync::Lazy;
-use tray::init_system_tray;
-use tray::on_system_tray_event;
-use std::env::current_exe;
-use serde::ser::StdError;
-use std::thread;
-use tauri::App;
-use tauri::AppHandle;
-use tauri::Manager;
-use tauri::PhysicalPosition;
 use crate::commands::clear_history;
 use crate::commands::delete_from_history;
 use crate::commands::get_history;
@@ -27,6 +13,21 @@ use crate::commands::save_to_file;
 use crate::commands::set_auto_start;
 use crate::commands::set_max_items;
 use crate::commands::unregister_shortcut;
+use auto_launch::*;
+use clipboard_master::Master;
+use master::init_clipboard;
+use master::init_clipboard_handler;
+use master::CLIPBOARD_HISTORY;
+use once_cell::unsync::Lazy;
+use serde::ser::StdError;
+use std::env::current_exe;
+use std::thread;
+use tauri::App;
+use tauri::AppHandle;
+use tauri::Manager;
+use tauri::PhysicalPosition;
+use tray::init_system_tray;
+use tray::on_system_tray_event;
 
 mod commands;
 mod img;
@@ -103,6 +104,16 @@ fn on_shortcut() {
 
 fn setup(app: &mut App) -> std::result::Result<(), Box<(dyn StdError + 'static)>> {
     let handle = app.handle();
+    let handle_clone = handle.clone();
+
+    thread::spawn(move || {
+        let handler = init_clipboard_handler(&handle_clone);
+        let result = Master::new(handler).run();
+        if result.is_err() {
+            eprintln!("Error: {}", result.err().unwrap());
+        }
+    });
+
     unsafe {
         GLOBAL_APP_HANDLE.handle = Some(handle);
     }
@@ -124,7 +135,7 @@ fn setup(app: &mut App) -> std::result::Result<(), Box<(dyn StdError + 'static)>
     Ok(())
 }
 
-fn run_app (_app_handle: &AppHandle, event: tauri::RunEvent) {
+fn run_app(_app_handle: &AppHandle, event: tauri::RunEvent) {
     match event {
         tauri::RunEvent::ExitRequested { api, .. } => {
             api.prevent_exit();
@@ -134,14 +145,8 @@ fn run_app (_app_handle: &AppHandle, event: tauri::RunEvent) {
 }
 
 fn main() {
-    thread::spawn(|| {
-        let result = Master::new(Handler).run();
-        if result.is_err() {
-            eprintln!("Error: {}", result.err().unwrap());
-        }
-    });
-
     tauri::Builder::default()
+        .manage(init_clipboard())
         .setup(setup)
         .system_tray(init_system_tray())
         .on_system_tray_event(on_system_tray_event)

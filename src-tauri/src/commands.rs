@@ -1,17 +1,21 @@
 use std::{thread, fs::File, io::Write};
 use mouse_position::mouse_position::Mouse;
-use tauri::{GlobalShortcutManager};
-use crate::{CLIPBOARD_HISTORY, AUTO_START, emit_event, Event, GLOBAL_APP_HANDLE, on_shortcut, master::{MAX_ITEMS, ensure_max_items, CLIPBOARD}, img::imagedata_to_image};
+use tauri::{GlobalShortcutManager, Manager};
+use crate::{CLIPBOARD_HISTORY, AUTO_START, emit_event, Event, GLOBAL_APP_HANDLE, on_shortcut, master::{MAX_ITEMS, ensure_max_items, AppClipboard,}, img::imagedata_to_image};
 
 #[tauri::command(async)]
-pub fn recopy_at_index(index: usize) {
+pub fn recopy_at_index(index: usize, handle: tauri::AppHandle) {
+    let state = handle.state::<AppClipboard>();
+
+    let mut clipboard = state.0.lock().unwrap();
+
     unsafe {
         let copied_content = &CLIPBOARD_HISTORY[index];
 
         if copied_content.image.is_some() {
-            CLIPBOARD.set_image(copied_content.image.clone().unwrap()).expect("Failed to set image");
+            clipboard.set_image(copied_content.image.clone().unwrap()).expect("Failed to set image");
         } else {
-            CLIPBOARD.set_text(copied_content.text.clone()).expect("Failed to set text");
+            clipboard.set_text(copied_content.text.clone()).expect("Failed to set text");
         }
 
         let timeout = std::time::Duration::from_millis(100);
