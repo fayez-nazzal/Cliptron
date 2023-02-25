@@ -1,7 +1,7 @@
 use std::{thread, fs::File, io::Write};
 
 use mouse_position::mouse_position::Mouse;
-use tauri::GlobalShortcutManager;
+use tauri::{GlobalShortcutManager};
 
 use crate::{CLIPBOARD, CLIPBOARD_HISTORY, AUTO_START, emit_event, Event, GLOBAL_APP_HANDLE, on_shortcut, master::{MAX_ITEMS, ensure_max_items}, img::imagedata_to_image};
 

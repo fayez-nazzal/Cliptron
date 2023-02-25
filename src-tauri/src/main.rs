@@ -9,6 +9,8 @@ use clipboard_master::Master;
 use master::Handler;
 use master::CLIPBOARD_HISTORY;
 use once_cell::unsync::Lazy;
+use tray::init_system_tray;
+use tray::on_system_tray_event;
 use std::env::current_exe;
 use serde::ser::StdError;
 use std::thread;
@@ -16,7 +18,6 @@ use tauri::App;
 use tauri::AppHandle;
 use tauri::Manager;
 use tauri::PhysicalPosition;
-use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
 use crate::commands::clear_history;
 use crate::commands::delete_from_history;
 use crate::commands::get_history;
@@ -31,6 +32,7 @@ use crate::commands::unregister_shortcut;
 mod commands;
 mod img;
 mod master;
+mod tray;
 
 static mut CLIPBOARD: once_cell::unsync::Lazy<arboard::Clipboard> = Lazy::new(|| {
     let clipboard = Clipboard::new().unwrap();
@@ -128,29 +130,7 @@ fn setup(app: &mut App) -> std::result::Result<(), Box<(dyn StdError + 'static)>
     Ok(())
 }
 
-fn on_system_tray_event (app: &AppHandle, event: SystemTrayEvent) {
-    match event {
-        SystemTrayEvent::LeftClick {
-            position: _,
-            size: _,
-            ..
-        } => {
-            let main_window = app.get_window("main").unwrap();
-            main_window.show().unwrap();
-        }
-        SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-            "show" => {
-                let main_window = app.get_window("main").unwrap();
-                main_window.show().unwrap();
-            }
-            "quit" => {
-                app.exit(0);
-            }
-            _ => {}
-        },
-        _ => {}
-    }
-}
+
 
 fn run_app (_app_handle: &AppHandle, event: tauri::RunEvent) {
     match event {
@@ -164,22 +144,14 @@ fn run_app (_app_handle: &AppHandle, event: tauri::RunEvent) {
 fn main() {
     thread::spawn(|| {
         let result = Master::new(Handler).run();
-
         if result.is_err() {
             eprintln!("Error: {}", result.err().unwrap());
         }
     });
 
-    let show = CustomMenuItem::new("show".to_string(), "Show");
-    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-
-    let tray_menu = SystemTrayMenu::new().add_item(show).add_item(quit);
-
-    let tray = SystemTray::new().with_menu(tray_menu);
-
     tauri::Builder::default()
         .setup(setup)
-        .system_tray(tray)
+        .system_tray(init_system_tray())
         .on_system_tray_event(on_system_tray_event)
         .invoke_handler(tauri::generate_handler![
             get_mouse_position,
