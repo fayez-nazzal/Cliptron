@@ -27,9 +27,7 @@ impl ClipboardHandler for Handler<'_> {
         CallbackResult::Next
     }
 
-    fn on_clipboard_error(&mut self, err: io::Error) -> CallbackResult {
-        println!("Clipboard Error: {}", err);
-
+    fn on_clipboard_error(&mut self, _: io::Error) -> CallbackResult {
         CallbackResult::Next
     }
 }

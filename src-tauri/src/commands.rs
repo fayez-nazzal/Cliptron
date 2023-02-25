@@ -166,8 +166,6 @@ pub fn register_shortcut(
     previous_shortcut: Option<&str>,
     handle: tauri::AppHandle,
 ) {
-    println!("register called with {}", shortcut);
-
     let mut global_shortcut_manager = handle.global_shortcut_manager();
 
     // unregister previous shortcut
