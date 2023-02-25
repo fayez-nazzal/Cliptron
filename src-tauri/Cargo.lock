@@ -302,7 +302,6 @@ dependencies = [
  "clipboard-master",
  "image",
  "mouse_position",
- "once_cell",
  "serde",
  "serde_json",
  "tauri",
