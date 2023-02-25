@@ -9,19 +9,26 @@ use auto_launch::*;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use image::DynamicImage;
 use image::ImageOutputFormat;
-use mouse_position::mouse_position::Mouse;
 use once_cell::unsync::Lazy;
 use tauri::PhysicalPosition;
 use std::env::current_exe;
-use std::fs::File;
 use std::io;
 use std::io::Cursor;
-use std::io::Write;
 use std::thread;
 use tauri::AppHandle;
 use tauri::GlobalShortcutManager;
 use tauri::Manager;
 use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
+
+use crate::commands::clear_history;
+use crate::commands::delete_from_history;
+use crate::commands::get_history;
+use crate::commands::get_mouse_position;
+use crate::commands::recopy_at_index;
+use crate::commands::save_to_file;
+use crate::commands::set_auto_start;
+use crate::commands::set_max_items;
+mod commands;
 
 struct ClipboardContent {
     text: String,
@@ -44,7 +51,7 @@ struct GlobalAppHandle {
 static mut GLOBAL_APP_HANDLE: once_cell::unsync::Lazy<GlobalAppHandle> =
     Lazy::new(|| GlobalAppHandle { handle: None });
 
-static mut auto_start: Option<AutoLaunch> = None;
+static mut AUTO_START: Option<AutoLaunch> = None;
 
 #[derive(Clone, serde::Serialize)]
 struct HistoryEventPayload {}
@@ -151,7 +158,7 @@ impl ClipboardHandler for Handler {
             let copied_text_result = CLIPBOARD.get_text();
             let copied_image_result = CLIPBOARD.get_image();
 
-            let mut copied_text = String::new();
+            let copied_text;
 
             if copied_image_result.is_ok() {
                 let copied_image = copied_image_result.unwrap();
@@ -174,109 +181,6 @@ impl ClipboardHandler for Handler {
     }
 }
 
-#[tauri::command(async)]
-fn get_history() -> Vec<String> {
-    unsafe {
-        return CLIPBOARD_HISTORY.iter().map(|x| x.text.clone()).collect();
-    }
-}
-
-#[tauri::command]
-fn delete_from_history(index: usize) {
-    unsafe {
-        CLIPBOARD_HISTORY.remove(index);
-
-        emit_event(Event::History)
-    }
-}
-
-#[tauri::command]
-fn clear_history() {
-    unsafe {
-        CLIPBOARD_HISTORY.clear();
-
-        emit_event(Event::History)
-    }
-}
-
-use winapi::um::winuser::{keybd_event, VK_CONTROL, KEYEVENTF_EXTENDEDKEY};
-
-#[tauri::command(async)]
-fn recopy_at_index(index: usize) {
-    unsafe {
-        let copied_content = &CLIPBOARD_HISTORY[index];
-
-        if copied_content.image.is_some() {
-            CLIPBOARD.set_image(copied_content.image.clone().unwrap());
-        } else {
-            CLIPBOARD.set_text(copied_content.text.clone());
-        }
-
-        let timeout = std::time::Duration::from_millis(100);
-        thread::sleep(timeout);    
-        if cfg!(target_os = "windows") {
-            keybd_event(VK_CONTROL as u8, 0, 0, 0);
-            keybd_event(86, 0, KEYEVENTF_EXTENDEDKEY, 0);
-            keybd_event(86, 0, KEYEVENTF_EXTENDEDKEY | winapi::um::winuser::KEYEVENTF_KEYUP, 0);
-            keybd_event(VK_CONTROL as u8, 0, winapi::um::winuser::KEYEVENTF_KEYUP, 0);
-        }
-    }
-
-}
-
-#[tauri::command]
-fn get_mouse_position() -> (i32, i32) {
-    let position = Mouse::get_mouse_position();
-    let position = match position {
-        Mouse::Position { x, y } => (x, y),
-        Mouse::Error => (0, 0),
-    };
-
-    position
-}
-
-#[tauri::command]
-fn save_to_file(index: usize, path: String) {
-    unsafe {
-        let copied_content = &CLIPBOARD_HISTORY[index];
-
-        if copied_content.image.is_some() {
-            let image = imagedata_to_image(&copied_content.image.clone().unwrap());
-            let mut path_with_extension = path.clone();
-
-            // if path doesn't have an extension, add .png
-            if path_with_extension.split('.').count() == 1 {
-                path_with_extension.push_str(".png");
-            }
-
-            image.save(path_with_extension).unwrap();
-        } else {
-            let mut file = File::create(path).unwrap();
-            file.write_all(copied_content.text.as_bytes()).unwrap();
-        }
-    }
-}
-
-#[tauri::command(async)]
-fn set_auto_start(value: bool) {
-    unsafe {
-        if auto_start != None {
-            if value {
-                auto_start.as_ref().unwrap().enable().unwrap();
-            } else {
-                auto_start.as_ref().unwrap().disable().unwrap();
-            }
-        }
-    }
-}
-
-#[tauri::command(async)]
-fn set_max_items(value: usize) {
-    unsafe {
-        MAX_ITEMS = value;
-        ensure_max_items();
-    }
-}
 
 fn on_shortcut() {
     unsafe {
@@ -369,7 +273,7 @@ fn main() {
             let current_exe = current_exe().unwrap();
 
             unsafe {
-                auto_start = Some(
+                AUTO_START = Some(
                     AutoLaunchBuilder::new()
                         .set_app_name(&app_name)
                         .set_app_path(&current_exe.to_str().unwrap())
