@@ -1,19 +1,20 @@
 use std::io;
-
-use arboard::ImageData;
+use arboard::{ImageData, Clipboard};
 use clipboard_master::{ClipboardHandler, CallbackResult};
+use once_cell::unsync::Lazy;
+use crate::{emit_event, Event, img::{imagedata_to_image, image_to_base64}};
 
-use crate::{CLIPBOARD, emit_event, Event, img::{imagedata_to_image, image_to_base64}};
 
+pub static mut CLIPBOARD: once_cell::unsync::Lazy<arboard::Clipboard> = Lazy::new(|| {
+    let clipboard = Clipboard::new().unwrap();
+    clipboard
+});
 pub struct ClipboardContent {
     pub text: String,
     pub image: Option<ImageData<'static>>,
 }
-
 pub static mut CLIPBOARD_HISTORY: Vec<ClipboardContent> = Vec::new();
-
 pub static mut MAX_ITEMS: usize = 10;
-
 pub struct Handler;
 
 impl ClipboardHandler for Handler {

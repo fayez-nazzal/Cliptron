@@ -3,7 +3,6 @@
     windows_subsystem = "windows"
 )]
 
-use arboard::Clipboard;
 use auto_launch::*;
 use clipboard_master::Master;
 use master::Handler;
@@ -33,11 +32,6 @@ mod commands;
 mod img;
 mod master;
 mod tray;
-
-static mut CLIPBOARD: once_cell::unsync::Lazy<arboard::Clipboard> = Lazy::new(|| {
-    let clipboard = Clipboard::new().unwrap();
-    clipboard
-});
 
 struct GlobalAppHandle {
     handle: Option<AppHandle>,
@@ -129,8 +123,6 @@ fn setup(app: &mut App) -> std::result::Result<(), Box<(dyn StdError + 'static)>
 
     Ok(())
 }
-
-
 
 fn run_app (_app_handle: &AppHandle, event: tauri::RunEvent) {
     match event {
