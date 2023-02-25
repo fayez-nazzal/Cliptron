@@ -5,17 +5,18 @@
 
 use arboard::Clipboard;
 use auto_launch::*;
-use clipboard_master::{Master};
-use master::CLIPBOARD_HISTORY;
+use clipboard_master::Master;
 use master::Handler;
+use master::CLIPBOARD_HISTORY;
 use once_cell::unsync::Lazy;
-use tauri::PhysicalPosition;
 use std::env::current_exe;
+use serde::ser::StdError;
 use std::thread;
+use tauri::App;
 use tauri::AppHandle;
 use tauri::Manager;
+use tauri::PhysicalPosition;
 use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
-
 use crate::commands::clear_history;
 use crate::commands::delete_from_history;
 use crate::commands::get_history;
@@ -28,8 +29,8 @@ use crate::commands::set_max_items;
 use crate::commands::unregister_shortcut;
 
 mod commands;
-mod master;
 mod img;
+mod master;
 
 static mut CLIPBOARD: once_cell::unsync::Lazy<arboard::Clipboard> = Lazy::new(|| {
     let clipboard = Clipboard::new().unwrap();
@@ -48,9 +49,9 @@ static mut AUTO_START: Option<AutoLaunch> = None;
 #[derive(Clone, serde::Serialize)]
 struct HistoryEventPayload {}
 
-enum  Event {
+enum Event {
     History,
-    Shortcut
+    Shortcut,
 }
 
 impl Event {
@@ -104,6 +105,62 @@ fn on_shortcut() {
     }
 }
 
+fn setup(app: &mut App) -> std::result::Result<(), Box<(dyn StdError + 'static)>> {
+    let handle = app.handle();
+    unsafe {
+        GLOBAL_APP_HANDLE.handle = Some(handle);
+    }
+
+    let app_name = &app.package_info().name;
+    let current_exe = current_exe().unwrap();
+
+    unsafe {
+        AUTO_START = Some(
+            AutoLaunchBuilder::new()
+                .set_app_name(&app_name)
+                .set_app_path(&current_exe.to_str().unwrap())
+                .set_use_launch_agent(true)
+                .build()
+                .unwrap(),
+        );
+    }
+
+    Ok(())
+}
+
+fn on_system_tray_event (app: &AppHandle, event: SystemTrayEvent) {
+    match event {
+        SystemTrayEvent::LeftClick {
+            position: _,
+            size: _,
+            ..
+        } => {
+            let main_window = app.get_window("main").unwrap();
+            main_window.show().unwrap();
+        }
+        SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
+            "show" => {
+                let main_window = app.get_window("main").unwrap();
+                main_window.show().unwrap();
+            }
+            "quit" => {
+                app.exit(0);
+            }
+            _ => {}
+        },
+        _ => {}
+    }
+}
+
+fn run_app (_app_handle: &AppHandle, event: tauri::RunEvent) {
+    match event {
+        tauri::RunEvent::ExitRequested { api, .. } => {
+            api.prevent_exit();
+        }
+        _ => {}
+    }
+}
+
 fn main() {
     thread::spawn(|| {
         let result = Master::new(Handler).run();
@@ -121,50 +178,9 @@ fn main() {
     let tray = SystemTray::new().with_menu(tray_menu);
 
     tauri::Builder::default()
-        .setup(|app| {
-            let handle = app.handle();
-            unsafe {
-                GLOBAL_APP_HANDLE.handle = Some(handle);
-            }
-
-            let app_name = &app.package_info().name;
-            let current_exe = current_exe().unwrap();
-
-            unsafe {
-                AUTO_START = Some(
-                    AutoLaunchBuilder::new()
-                        .set_app_name(&app_name)
-                        .set_app_path(&current_exe.to_str().unwrap())
-                        .set_use_launch_agent(true)
-                        .build()
-                        .unwrap(),
-                );
-            }
-
-            Ok(())
-        })
+        .setup(setup)
         .system_tray(tray)
-        .on_system_tray_event(|app, event| match event {
-            SystemTrayEvent::LeftClick {
-                position: _,
-                size: _,
-                ..
-            } => {
-                let main_window = app.get_window("main").unwrap();
-                main_window.show().unwrap();
-            }
-            SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-                "show" => {
-                    let main_window = app.get_window("main").unwrap();
-                    main_window.show().unwrap();
-                }
-                "quit" => {
-                    app.exit(0);
-                }
-                _ => {}
-            },
-            _ => {}
-        })
+        .on_system_tray_event(on_system_tray_event)
         .invoke_handler(tauri::generate_handler![
             get_mouse_position,
             get_history,
@@ -179,10 +195,5 @@ fn main() {
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
-        .run(|_app_handle, event| match event {
-            tauri::RunEvent::ExitRequested { api, .. } => {
-                api.prevent_exit();
-            }
-            _ => {}
-        });
+        .run(run_app);
 }
