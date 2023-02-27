@@ -2,14 +2,38 @@ use crate::{
     emit_event, img::imagedata_to_image, master::ensure_max_items, state::AppState, Event,
 };
 use mouse_position::mouse_position::Mouse;
-use std::{fs::File, io::Write, thread};
+use std::{fs::File, io::Write, process::Command, thread};
 use tauri::{GlobalShortcutManager, Manager, PhysicalPosition};
 
 fn on_shortcut(handle: tauri::AppHandle) {
+    let state = handle.state::<AppState>();
+    let mut app_state = state.0.lock().unwrap();
+
+    #[cfg(target_os = "macos")]
+    {
+        let frontAppScript = r#"
+        tell application "System Events"
+            set frontApp to name of first application process whose frontmost is true
+        end tell
+
+        frontApp
+    "#;
+
+        let output = Command::new("osascript")
+            .arg("-e")
+            .arg(frontAppScript)
+            .output()
+            .expect("failed to execute process");
+
+        let output = String::from_utf8(output.stdout).unwrap();
+
+        let output = output.trim();
+
+        app_state.last_active_window = Some(output.to_string());
+    }
+
     let mouse_position = get_mouse_position();
-
     let app_window = handle.get_window("main").unwrap();
-
     let window_size = app_window.inner_size().unwrap();
 
     let result = app_window.set_position(tauri::Position::Physical(PhysicalPosition::new(
@@ -70,6 +94,32 @@ pub fn recopy_at_index(index: usize, handle: tauri::AppHandle) {
             0,
         );
         keybd_event(VK_CONTROL as u8, 0, winapi::um::winuser::KEYEVENTF_KEYUP, 0);
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        let last_active_window = app_state.last_active_window.clone();
+
+        let refocusScript = format!(
+            r#"tell application "{}"
+            activate
+            delay 0.02
+            tell application "System Events" to keystroke "v" using command down
+        end tell"#,
+            last_active_window.unwrap()
+        );
+
+        let output = Command::new("osascript")
+            .arg("-e")
+            .arg(refocusScript)
+            .output()
+            .expect("failed to execute process");
+
+        let output = String::from_utf8(output.stdout).unwrap();
+
+        let output = output.trim();
+
+        println!("Output: {}", output);
     }
 }
 
