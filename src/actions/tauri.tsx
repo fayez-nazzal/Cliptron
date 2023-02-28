@@ -5,10 +5,8 @@ export const clear_history = async () => {
   await invoke("clear_history");
 };
 
-export const hide_window = () => {
-  const { appWindow } = require("@tauri-apps/api/window");
-
-  appWindow.hide();
+export const hide_window = async () => {
+  await invoke("hide_window")
 };
 
 let listening = false;

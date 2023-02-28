@@ -22,12 +22,15 @@ fn on_shortcut(handle: tauri::AppHandle) {
         return;
     }
 
-    let result = app_window.show();
+    let result = app_window.unminimize();
 
     if result.is_err() {
         eprintln!("Error: {}", result.err().unwrap());
         return;
     }
+    
+    app_window.show().unwrap();
+    app_window.set_focus().unwrap();
 
     emit_event(Event::Shortcut, &handle);
 }
@@ -188,4 +191,17 @@ pub fn unregister_shortcut(shortcut: &str, handle: tauri::AppHandle) {
         .global_shortcut_manager()
         .unregister(shortcut)
         .unwrap();
+}
+
+#[tauri::command(async)]
+pub fn hide_window(handle: tauri::AppHandle) {
+    println!("hiding");
+    let app_window = handle.get_window("main").unwrap();
+    let result = app_window.set_always_on_top(false);
+
+    if result.is_err() {
+        eprintln!("Error setting always on top");
+    }
+
+    app_window.hide().expect("Failed to hide window");
 }

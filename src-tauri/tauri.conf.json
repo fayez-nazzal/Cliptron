@@ -23,7 +23,9 @@
         "hide": true,
         "setPosition": true,
         "setAlwaysOnTop": true,
-        "startDragging": true
+        "startDragging": true,
+        "minimize": true,
+        "unminimize": true
       },
       "dialog": {
         "save": true

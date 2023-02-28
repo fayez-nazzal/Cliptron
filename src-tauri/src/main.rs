@@ -7,6 +7,7 @@ use crate::commands::clear_history;
 use crate::commands::delete_from_history;
 use crate::commands::get_history;
 use crate::commands::get_mouse_position;
+use crate::commands::hide_window;
 use crate::commands::recopy_at_index;
 use crate::commands::register_shortcut;
 use crate::commands::save_to_file;
@@ -111,7 +112,8 @@ fn main() {
             set_auto_start,
             set_max_items,
             register_shortcut,
-            unregister_shortcut
+            unregister_shortcut,
+            hide_window
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")
