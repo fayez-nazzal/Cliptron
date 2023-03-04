@@ -18,7 +18,7 @@ export const ShortcutInput = ({
   const [focused, setFocused] = useState<boolean>(false);
 
   const getKey = (key: string) => {
-    return key === " " ? "SPACE" : key === "META" ? "SUPER" : key.toUpperCase();
+    return key === " " ? "SPACE" : key.match(/META/i) ? "SUPER" : key.toUpperCase();
   };
 
   const onKeydown = (e: any) => {
