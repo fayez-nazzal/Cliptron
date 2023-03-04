@@ -3,7 +3,7 @@ use crate::{
 };
 use mouse_position::mouse_position::Mouse;
 use std::{fs::File, io::Write, process::Command, thread};
-use tauri::{GlobalShortcutManager, Manager, PhysicalPosition};
+use tauri::{GlobalShortcutManager, Manager, LogicalPosition, LogicalSize};
 
 fn on_shortcut(handle: tauri::AppHandle) {
     let state = handle.state::<AppState>();
@@ -34,12 +34,13 @@ fn on_shortcut(handle: tauri::AppHandle) {
 
     let mouse_position = get_mouse_position();
     let app_window = handle.get_window("main").unwrap();
-    let window_size = app_window.inner_size().unwrap();
+    let scale_factor = app_window.scale_factor().unwrap();
+    let window_size: LogicalSize<u32> = app_window.inner_size().unwrap().to_logical(scale_factor);
+    
+    let x = mouse_position.0 as i32 - (window_size.width / 2) as i32;
+    let y = mouse_position.1 as i32;
 
-    let result = app_window.set_position(tauri::Position::Physical(PhysicalPosition::new(
-        mouse_position.0 as i32 - (window_size.width / 2) as i32,
-        mouse_position.1 as i32,
-    )));
+    let result = app_window.set_position(LogicalPosition::new(x, y));
 
     if result.is_err() {
         eprintln!("Error: {}", result.err().unwrap());
