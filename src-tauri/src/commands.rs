@@ -11,9 +11,9 @@ fn on_shortcut(handle: tauri::AppHandle) {
 
     #[cfg(target_os = "macos")]
     {
-        let frontAppScript = r#"
+        let front_app_script = r#"
         tell application "System Events"
-            set frontApp to name of first application process whose frontmost is true
+            set frontApp to bundle identifier of first application process whose frontmost is true
         end tell
 
         frontApp
@@ -21,7 +21,7 @@ fn on_shortcut(handle: tauri::AppHandle) {
 
         let output = Command::new("osascript")
             .arg("-e")
-            .arg(frontAppScript)
+            .arg(front_app_script)
             .output()
             .expect("failed to execute process");
 
@@ -101,18 +101,24 @@ pub fn recopy_at_index(index: usize, handle: tauri::AppHandle) {
     {
         let last_active_window = app_state.last_active_window.clone();
 
-        let refocusScript = format!(
-            r#"tell application "{}"
+        println!("{:?}", (&last_active_window));
+
+        let refocus_script = format!(
+            r#"tell application id "{}"
             activate
-            delay 0.02
+            delay .02
             tell application "System Events" to keystroke "v" using command down
         end tell"#,
             last_active_window.unwrap()
         );
 
+        println!("{}", refocus_script);
+
+
+
         let output = Command::new("osascript")
             .arg("-e")
-            .arg(refocusScript)
+            .arg(refocus_script)
             .output()
             .expect("failed to execute process");
 
