@@ -29,8 +29,6 @@ pub fn paste_from_clipboard(last_active_window: String, _last_active_element: Op
     {
         let last_active_window = last_active_window.clone();
 
-        println!("{:?}", (&last_active_window));
-
         let refocus_script = format!(
             r#"tell application id "{}"
             activate

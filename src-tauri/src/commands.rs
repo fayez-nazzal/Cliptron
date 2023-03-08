@@ -68,7 +68,7 @@ pub fn select_clipboard_item(index: usize, handle: tauri::AppHandle) {
             .expect("Failed to set text");
     }
 
-    let timeout = std::time::Duration::from_millis(100);
+    let timeout = std::time::Duration::from_millis(20);
     thread::sleep(timeout);
 
     let last_active_window = app_state.last_active_window.clone();
