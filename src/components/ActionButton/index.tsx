@@ -1,6 +1,6 @@
 import { IActionButtonProps } from "./index.types";
 import { Copy } from "@icon-park/react";
-import { recopy_at_index } from "../../actions/tauri";
+import { select_clipboard_item } from "../../actions/tauri";
 
 export const ActionButton = ({
   icon: Icon,

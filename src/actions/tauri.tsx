@@ -36,8 +36,8 @@ export const get_history = async () => {
   return history;
 };
 
-export const recopy_at_index = async (index: number) => {
-  invoke("recopy_at_index", { index });
+export const select_clipboard_item = async (index: number) => {
+  invoke("select_clipboard_item", { index });
 
   hide_window();
 };

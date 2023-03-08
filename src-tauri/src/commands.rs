@@ -49,7 +49,7 @@ fn on_shortcut(handle: tauri::AppHandle) {
 }
 
 #[tauri::command(async)]
-pub fn recopy_at_index(index: usize, handle: tauri::AppHandle) {
+pub fn select_clipboard_item(index: usize, handle: tauri::AppHandle) {
     let state = handle.state::<AppState>();
     let mut app_state = state.0.lock().unwrap();
     let clipboard_history = (&app_state).clipboard_history.clone();

@@ -8,7 +8,7 @@ use crate::commands::delete_from_history;
 use crate::commands::get_history;
 use crate::commands::get_mouse_position;
 use crate::commands::hide_window;
-use crate::commands::recopy_at_index;
+use crate::commands::select_clipboard_item;
 use crate::commands::register_shortcut;
 use crate::commands::save_to_file;
 use crate::commands::set_auto_start;
@@ -108,7 +108,7 @@ fn main() {
             get_history,
             delete_from_history,
             clear_history,
-            recopy_at_index,
+            select_clipboard_item,
             save_to_file,
             set_auto_start,
             set_max_items,

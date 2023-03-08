@@ -6,7 +6,7 @@ import { historyAtom } from "../atoms/history";
 import { useAtom } from "jotai";
 import {
   get_history,
-  recopy_at_index,
+  select_clipboard_item,
   delete_from_history,
   save_to_file,
 } from "../actions/tauri";
@@ -14,7 +14,7 @@ import { ActionButton } from "../components/ActionButton/index";
 
 const App = () => {
   const [history, setHistory] = useAtom(historyAtom);
-  
+
   const updateHistory = async () => {
     const history = await get_history();
 
@@ -37,7 +37,7 @@ const App = () => {
             <button
               key={index}
               className="flex-1 text-left max-h-44 overflow-auto text-black dark:text-white p-2"
-              onClick={() => recopy_at_index(index)}
+              onClick={() => select_clipboard_item(index)}
             >
               {isImage ? (
                 <img
@@ -54,7 +54,7 @@ const App = () => {
                 <ActionButton
                   icon={Copy}
                   label="Copy"
-                  onClick={() => recopy_at_index(index)}
+                  onClick={() => select_clipboard_item(index)}
                 />
                 <ActionButton
                   icon={DownloadComputer}
