@@ -33,6 +33,7 @@ mod img;
 mod master;
 mod state;
 mod tray;
+mod autopaste;
 
 #[derive(Clone, serde::Serialize)]
 struct HistoryEventPayload {}
