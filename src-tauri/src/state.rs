@@ -10,7 +10,8 @@ pub struct AppInnerState {
     pub clipboard_history: Vec<ClipboardContent>,
     pub max_items: usize,
     pub auto_start: Option<AutoLaunch>,
-    pub last_active_window: Option<String>
+    pub last_active_window: Option<String>,
+    pub last_active_element: Option<String>,
 }
 
 pub struct AppState(pub Arc<Mutex<AppInnerState>>);
@@ -25,6 +26,7 @@ pub fn init_state() -> AppState {
         clipboard_history,
         max_items,
         auto_start: None,
-        last_active_window: None
+        last_active_window: None,
+        last_active_element: None,
     })))
 }

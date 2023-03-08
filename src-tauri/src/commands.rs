@@ -3,7 +3,7 @@ use crate::{
 };
 use mouse_position::mouse_position::Mouse;
 use std::{fs::File, io::Write, process::Command, thread};
-use tauri::{GlobalShortcutManager, Manager, LogicalPosition, LogicalSize};
+use tauri::{GlobalShortcutManager, LogicalPosition, LogicalSize, Manager};
 
 fn on_shortcut(handle: tauri::AppHandle) {
     let state = handle.state::<AppState>();
@@ -36,11 +36,35 @@ fn on_shortcut(handle: tauri::AppHandle) {
     let app_window = handle.get_window("main").unwrap();
     let scale_factor = app_window.scale_factor().unwrap();
     let window_size: LogicalSize<u32> = app_window.inner_size().unwrap().to_logical(scale_factor);
-    
+
     let x = mouse_position.0 as i32 - (window_size.width / 2) as i32;
     let y = mouse_position.1 as i32;
 
     let result = app_window.set_position(LogicalPosition::new(x, y));
+
+    #[cfg(target_os = "linux")]
+    {
+        let active_win_id_output = Command::new("xdotool")
+            .args(&["getactivewindow"])
+            .output()
+            .expect("Failed to get active window ID");
+        let active_win_id = String::from_utf8_lossy(&active_win_id_output.stdout)
+            .trim()
+            .to_string();
+
+        let active_element_name_output = Command::new("xprop")
+            .args(&["-id", &active_win_id, "_NET_WM_NAME"])
+            .output()
+            .expect("Failed to get active element name");
+        let active_element_name =
+            String::from_utf8_lossy(&active_element_name_output.stdout).to_string();
+
+        println!("Active window id: {}", active_win_id.to_string());
+        println!("Active element name: {}", active_element_name.to_string());
+
+        app_state.last_active_window = Some(active_win_id);
+        app_state.last_active_element = Some(active_element_name);
+    }
 
     if result.is_err() {
         eprintln!("Error: {}", result.err().unwrap());
@@ -53,9 +77,15 @@ fn on_shortcut(handle: tauri::AppHandle) {
         eprintln!("Error: {}", result.err().unwrap());
         return;
     }
-    
+
     app_window.show().unwrap();
     app_window.set_focus().unwrap();
+    let result = app_window.set_focus();
+
+    if result.is_err() {
+        eprintln!("Error: {}", result.err().unwrap());
+        return;
+    }
 
     emit_event(Event::Shortcut, &handle);
 }
@@ -86,15 +116,102 @@ pub fn recopy_at_index(index: usize, handle: tauri::AppHandle) {
     #[cfg(target_os = "windows")]
     {
         use winapi::um::winuser::{keybd_event, KEYEVENTF_EXTENDEDKEY, VK_CONTROL};
-        keybd_event(VK_CONTROL as u8, 0, 0, 0);
-        keybd_event(86, 0, KEYEVENTF_EXTENDEDKEY, 0);
-        keybd_event(
-            86,
-            0,
-            KEYEVENTF_EXTENDEDKEY | winapi::um::winuser::KEYEVENTF_KEYUP,
-            0,
+        unsafe {
+            keybd_event(VK_CONTROL as u8, 0, 0, 0);
+            keybd_event(86, 0, KEYEVENTF_EXTENDEDKEY, 0);
+            keybd_event(
+                86,
+                0,
+                KEYEVENTF_EXTENDEDKEY | winapi::um::winuser::KEYEVENTF_KEYUP,
+                0,
+            );
+            keybd_event(VK_CONTROL as u8, 0, winapi::um::winuser::KEYEVENTF_KEYUP, 0);
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        let last_active_window = app_state.last_active_window.clone();
+
+        let refocusScript = format!(
+            r#"tell application "{}"
+            activate
+            delay 0.02
+            tell application "System Events" to keystroke "v" using command down
+        end tell"#,
+            last_active_window.unwrap()
         );
-        keybd_event(VK_CONTROL as u8, 0, winapi::um::winuser::KEYEVENTF_KEYUP, 0);
+
+        let output = Command::new("osascript")
+            .arg("-e")
+            .arg(refocusScript)
+            .output()
+            .expect("failed to execute process");
+
+        let output = String::from_utf8(output.stdout).unwrap();
+
+        let output = output.trim();
+
+        println!("Output: {}", output);
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        sleep(Duration::from_millis(100));
+
+        let last_active_window_id = &(&app_state).last_active_window;
+        let last_active_element_name = &(&app_state).last_active_element;
+
+        if last_active_window_id.is_none() || last_active_element_name.is_none() {
+            return;
+        }
+
+        let last_active_window_id = last_active_window_id.as_ref().unwrap();
+        let last_active_element_name = last_active_element_name.as_ref().unwrap();
+
+        Command::new("xdotool")
+            .args(&["windowactivate", &last_active_window_id.to_string()])
+            .output()
+            .expect("Failed to activate previous window");
+        Command::new("xdotool")
+            .args(&["windowfocus", &last_active_window_id.to_string()])
+            .output()
+            .expect("Failed to focus previous window");
+
+        // Wait for the window to become active and then search for the element by name
+        loop {
+            let win_name_output = Command::new("xprop")
+                .args(&["-id", &last_active_window_id.to_string(), "_NET_WM_NAME"])
+                .output()
+                .expect("Failed to get window name");
+            let win_name = String::from_utf8_lossy(&win_name_output.stdout)
+                .trim()
+                .to_string();
+
+            if win_name.trim() == last_active_element_name.to_string().trim() {
+                break;
+            }
+
+            sleep(Duration::from_millis(5));
+        }
+
+        Command::new("xdotool")
+            .args(&[
+                "search",
+                "--name",
+                &last_active_element_name.to_string(),
+                "windowactivate",
+                "--sync",
+            ])
+            .output()
+            .expect("Failed to activate element window");
+
+        sleep(Duration::from_millis(20));
+
+        Command::new("xdotool")
+            .args(&["key", "ctrl+v"])
+            .output()
+            .expect("Failed to simulate Ctrl+V key press");
     }
 
     #[cfg(target_os = "macos")]
@@ -113,8 +230,6 @@ pub fn recopy_at_index(index: usize, handle: tauri::AppHandle) {
         );
 
         println!("{}", refocus_script);
-
-
 
         let output = Command::new("osascript")
             .arg("-e")
