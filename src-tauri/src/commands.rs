@@ -2,7 +2,13 @@ use crate::{
     emit_event, img::imagedata_to_image, master::ensure_max_items, state::AppState, Event,
 };
 use mouse_position::mouse_position::Mouse;
-use std::{fs::File, io::Write, process::Command, thread};
+use std::{
+    fs::File,
+    io::Write,
+    process::Command,
+    thread::{self, sleep},
+    time::Duration,
+};
 use tauri::{GlobalShortcutManager, Manager, PhysicalPosition};
 
 fn on_shortcut(handle: tauri::AppHandle) {
@@ -32,6 +38,29 @@ fn on_shortcut(handle: tauri::AppHandle) {
         app_state.last_active_window = Some(output.to_string());
     }
 
+    if cfg!(target_os = "linux") {
+        let active_win_id_output = Command::new("xdotool")
+            .args(&["getactivewindow"])
+            .output()
+            .expect("Failed to get active window ID");
+        let active_win_id = String::from_utf8_lossy(&active_win_id_output.stdout)
+            .trim()
+            .to_string();
+
+        let active_element_name_output = Command::new("xprop")
+            .args(&["-id", &active_win_id, "_NET_WM_NAME"])
+            .output()
+            .expect("Failed to get active element name");
+        let active_element_name =
+            String::from_utf8_lossy(&active_element_name_output.stdout).to_string();
+
+        println!("Active window id: {}", active_win_id.to_string());
+        println!("Active element name: {}", active_element_name.to_string());
+
+        app_state.last_active_window = Some(active_win_id);
+        app_state.last_active_element = Some(active_element_name);
+    }
+
     let mouse_position = get_mouse_position();
     let app_window = handle.get_window("main").unwrap();
     let window_size = app_window.inner_size().unwrap();
@@ -47,6 +76,12 @@ fn on_shortcut(handle: tauri::AppHandle) {
     }
 
     let result = app_window.show();
+
+    if result.is_err() {
+        eprintln!("Error: {}", result.err().unwrap());
+        return;
+    }
+    
     let result = app_window.set_focus();
 
     if result.is_err() {
@@ -120,6 +155,65 @@ pub fn recopy_at_index(index: usize, handle: tauri::AppHandle) {
         let output = output.trim();
 
         println!("Output: {}", output);
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        sleep(Duration::from_millis(100));
+
+        let last_active_window_id = &(&app_state).last_active_window;
+        let last_active_element_name = &(&app_state).last_active_element;
+
+        if last_active_window_id.is_none() || last_active_element_name.is_none() {
+            return;
+        }
+
+        let last_active_window_id = last_active_window_id.as_ref().unwrap();
+        let last_active_element_name = last_active_element_name.as_ref().unwrap();
+
+        Command::new("xdotool")
+            .args(&["windowactivate", &last_active_window_id.to_string()])
+            .output()
+            .expect("Failed to activate previous window");
+        Command::new("xdotool")
+            .args(&["windowfocus", &last_active_window_id.to_string()])
+            .output()
+            .expect("Failed to focus previous window");
+
+        // Wait for the window to become active and then search for the element by name
+        loop {
+            let win_name_output = Command::new("xprop")
+                .args(&["-id", &last_active_window_id.to_string(), "_NET_WM_NAME"])
+                .output()
+                .expect("Failed to get window name");
+            let win_name = String::from_utf8_lossy(&win_name_output.stdout)
+                .trim()
+                .to_string();
+
+            if win_name.trim() == last_active_element_name.to_string().trim() {
+                break;
+            }
+
+            sleep(Duration::from_millis(5));
+        }
+
+        Command::new("xdotool")
+            .args(&[
+                "search",
+                "--name",
+                &last_active_element_name.to_string(),
+                "windowactivate",
+                "--sync",
+            ])
+            .output()
+            .expect("Failed to activate element window");
+
+        sleep(Duration::from_millis(20));
+
+        Command::new("xdotool")
+            .args(&["key", "ctrl+v"])
+            .output()
+            .expect("Failed to simulate Ctrl+V key press");
     }
 }
 
