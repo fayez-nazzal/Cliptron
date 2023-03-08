@@ -4,6 +4,7 @@ import { AutostartToggle } from "../components/AutostartToggle/index";
 import { MaxItemsInput } from "@components/MaxItemsInput/index";
 import { ShortcutSettingsEntry } from "../components/ShortcutSettingsEntry/index";
 import { useRouter } from "next/router";
+import { AutoPasteToggle } from "@components/AutoPasteToggle";
 
 const SettingsPage = () => {
   const router = useRouter();
@@ -20,24 +21,19 @@ const SettingsPage = () => {
         <ThemeToggle />
       </SettingsEntry>
 
+      <ShortcutSettingsEntry />
+
       <SettingsEntry label="Launch on startup">
         <AutostartToggle />
+      </SettingsEntry>
+
+      <SettingsEntry label="Auto Paste">
+        <AutoPasteToggle />
       </SettingsEntry>
 
       <SettingsEntry label="Max clipboard items">
         <MaxItemsInput />
       </SettingsEntry>
-
-      <ShortcutSettingsEntry />
-
-      <div className="flex w-full justify-center mt-auto mb-3 gap-2 mt-1">
-        <button
-          className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 flex-[0.4] hover:brightness-95 active:ring"
-          onClick={onOK}
-        >
-          OK
-        </button>
-      </div>
     </div>
   );
 };

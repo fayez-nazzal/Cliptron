@@ -112,6 +112,14 @@ export const set_auto_start = async (value: boolean) => {
   invoke("set_auto_start", { value });
 };
 
+export const set_auto_paste = async (value: boolean) => {
+  let numberValue = value ? 1 : 0;
+
+  localStorage.setItem("auto_paste", numberValue.toString());
+
+  invoke("set_item_select_behavior", { behavior: numberValue });
+};
+
 export const set_max_items = async (value: number) => {
   localStorage.setItem("max_items", value.toString());
   invoke("set_max_items", { value });

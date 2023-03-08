@@ -20,9 +20,9 @@ export const ShortcutSettingsEntry = () => {
   };
 
   return (
-    <SettingsEntry>
+    <SettingsEntry className="!h-12">
       <ShortcutInput
-        className={`border-gray400-light dark:border-gray400-dark border w-40 max-w-40 text-sm`}
+        className={`border-gray400-light dark:border-gray400-dark border w-40 max-w-40 text-sm !h-9`}
         shortcut={shortcut}
         isConfirmed={isShortcutConfirmed}
         setIsConfirmed={setIsShortcutConfirmed}
@@ -32,7 +32,7 @@ export const ShortcutSettingsEntry = () => {
       />
 
       <button
-        className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 w-14 ml-2 disabled:opacity-50 hover:brightness-95 active:ring"
+        className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg h-9 flex items-center justify-center w-14 ml-2 disabled:opacity-50 hover:brightness-95 active:ring"
         onClick={() => handleSubmit(onApplyClicked)}
         disabled={!isShortcutConfirmed || !unsavedShortcut}
       >
