@@ -12,6 +12,7 @@ use crate::commands::select_clipboard_item;
 use crate::commands::register_shortcut;
 use crate::commands::save_to_file;
 use crate::commands::set_auto_start;
+use crate::commands::set_item_select_behavior;
 use crate::commands::set_max_items;
 use crate::commands::unregister_shortcut;
 use auto_launch::*;
@@ -114,7 +115,8 @@ fn main() {
             set_max_items,
             register_shortcut,
             unregister_shortcut,
-            hide_window
+            hide_window,
+            set_item_select_behavior,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application")

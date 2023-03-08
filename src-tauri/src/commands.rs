@@ -1,5 +1,5 @@
 use crate::{
-    emit_event, img::imagedata_to_image, master::ensure_max_items, state::AppState, Event, autopaste::{paste_from_clipboard, get_active_elements},
+    emit_event, img::imagedata_to_image, master::ensure_max_items, state::{AppState, ItemSelectBehavior}, Event, autopaste::{paste_from_clipboard, get_active_elements},
 };
 use mouse_position::mouse_position::Mouse;
 use std::{fs::File, io::Write, thread};
@@ -53,7 +53,7 @@ pub fn select_clipboard_item(index: usize, handle: tauri::AppHandle) {
     let state = handle.state::<AppState>();
     let mut app_state = state.0.lock().unwrap();
     let clipboard_history = (&app_state).clipboard_history.clone();
-
+    let item_select_behavior = (&app_state).item_select_behavior.clone();
     let copied_content = &clipboard_history[index];
 
     if copied_content.image.is_some() {
@@ -74,8 +74,19 @@ pub fn select_clipboard_item(index: usize, handle: tauri::AppHandle) {
     let last_active_window = app_state.last_active_window.clone();
     let last_active_element = app_state.last_active_element.clone();
 
-    if last_active_window.is_some() {
+    if item_select_behavior == ItemSelectBehavior::AutoPaste && last_active_window.is_some() {
         paste_from_clipboard(last_active_window.unwrap(), last_active_element);
+    }
+}
+
+#[tauri::command]
+pub fn set_item_select_behavior(behavior: i8, handle: tauri::AppHandle) {
+    let state = handle.state::<AppState>();
+    let mut app_state = state.0.lock().unwrap();
+    if  behavior == 0 {
+        app_state.item_select_behavior = ItemSelectBehavior::Copy;
+    } else {
+        app_state.item_select_behavior = ItemSelectBehavior::AutoPaste;
     }
 }
 
