@@ -83,15 +83,17 @@ pub fn recopy_at_index(index: usize, handle: tauri::AppHandle) {
     #[cfg(target_os = "windows")]
     {
         use winapi::um::winuser::{keybd_event, KEYEVENTF_EXTENDEDKEY, VK_CONTROL};
-        keybd_event(VK_CONTROL as u8, 0, 0, 0);
-        keybd_event(86, 0, KEYEVENTF_EXTENDEDKEY, 0);
-        keybd_event(
-            86,
-            0,
-            KEYEVENTF_EXTENDEDKEY | winapi::um::winuser::KEYEVENTF_KEYUP,
-            0,
-        );
-        keybd_event(VK_CONTROL as u8, 0, winapi::um::winuser::KEYEVENTF_KEYUP, 0);
+        unsafe {
+            keybd_event(VK_CONTROL as u8, 0, 0, 0);
+            keybd_event(86, 0, KEYEVENTF_EXTENDEDKEY, 0);
+            keybd_event(
+                86,
+                0,
+                KEYEVENTF_EXTENDEDKEY | winapi::um::winuser::KEYEVENTF_KEYUP,
+                0,
+            );
+            keybd_event(VK_CONTROL as u8, 0, winapi::um::winuser::KEYEVENTF_KEYUP, 0);
+        }
     }
 
     #[cfg(target_os = "macos")]
