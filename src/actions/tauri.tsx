@@ -113,9 +113,9 @@ export const set_auto_start = async (value: boolean) => {
 };
 
 export const set_auto_paste = async (value: boolean) => {
-  let numberValue = value ? 1 : 0;
+  localStorage.setItem("auto_paste", value.toString());
 
-  localStorage.setItem("auto_paste", numberValue.toString());
+  let numberValue = value ? 1 : 0;
 
   invoke("set_item_select_behavior", { behavior: numberValue });
 };
@@ -134,9 +134,14 @@ export const retrieve_settings = async () => {
       : true
   );
 
+  set_auto_paste(
+    localStorage.getItem("auto_paste")
+    ? localStorage.getItem("auto_paste") === "true"
+    : true
+  )
+
   setup_app_theme();
   hideWhenNotFocused();
 
   // Disable right click
-  document.addEventListener("contextmenu", (event) => event.preventDefault());
 };
