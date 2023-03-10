@@ -1,6 +1,6 @@
 import { TextInput } from "@components/Input/index";
+import { maxItemsAtom } from "@pages/atoms";
 import { useAtom } from "jotai";
-import { maxItemsAtom } from "../../atoms/maxitems";
 import { set_max_items } from "../../actions/tauri";
 
 export const MaxItemsInput = () => {

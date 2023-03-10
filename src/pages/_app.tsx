@@ -14,12 +14,14 @@ import {
 } from "@actions/tauri";
 import { register_shortcut } from "@actions/tauri";
 import { useRouter } from "next/router";
-import { visitedAtom } from "@atoms/visited";
-import { themeAtom } from "@atoms/theme";
-import { autoPasteAtom } from "@atoms/autopaste";
-import { autoStartAtom } from "@atoms/autostart";
-import { maxItemsAtom } from "@atoms/maxitems";
-import { shortcutAtom } from "@atoms/shortcut";
+import {
+  autoPasteAtom,
+  autoStartAtom,
+  maxItemsAtom,
+  shortcutAtom,
+  themeAtom,
+  visitedAtom,
+} from "./atoms";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();

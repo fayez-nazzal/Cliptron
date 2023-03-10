@@ -1,8 +1,6 @@
 import { Delete, DownloadComputer, Copy } from "@icon-park/react";
-import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect } from "react";
 import { listen } from "@tauri-apps/api/event";
-import { historyAtom } from "../atoms/history";
 import { useAtom } from "jotai";
 import {
   get_history,
@@ -12,6 +10,7 @@ import {
 } from "../actions/tauri";
 import { ActionButton } from "../components/ActionButton/index";
 import { useRouter } from "next/router";
+import { historyAtom } from "./atoms";
 
 const App = () => {
   const [history, setHistory] = useAtom(historyAtom);

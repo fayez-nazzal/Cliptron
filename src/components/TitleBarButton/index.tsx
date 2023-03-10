@@ -1,4 +1,3 @@
-import { Close } from "@icon-park/react";
 import { ITitleBarButtonProps } from "./index.types";
 
 export const TitleBarButton = ({

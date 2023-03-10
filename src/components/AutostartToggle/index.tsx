@@ -1,6 +1,6 @@
 import { Checkbox } from "@components/Checkbox";
+import { autoStartAtom } from "@pages/atoms";
 import { useAtom } from "jotai";
-import { autoStartAtom } from "../../atoms/autostart";
 import { set_auto_start } from "../../actions/tauri";
 
 export const AutostartToggle = () => {

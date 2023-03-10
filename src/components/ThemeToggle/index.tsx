@@ -1,6 +1,6 @@
 import { change_dom_theme, EAppTheme } from "@actions/tauri";
-import { themeAtom } from "@atoms/theme";
 import { DarkMode, SunOne } from "@icon-park/react";
+import { themeAtom } from "@pages/atoms";
 import { useAtom } from "jotai";
 
 export const ThemeToggle = () => {

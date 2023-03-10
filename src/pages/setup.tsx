@@ -4,7 +4,7 @@ import { TestShortcut } from "../components/TestShortcut/index";
 import { show_window } from "@actions/tauri";
 import { unregister_shortcut } from "../actions/tauri";
 import { useAtom } from "jotai";
-import { shortcutAtom } from "@atoms/shortcut";
+import { previousShortcutAtom, shortcutAtom } from "./atoms";
 
 export interface IStepProps {
   onNext: () => void;
@@ -16,7 +16,7 @@ const steps = [SetupShortcut, TestShortcut];
 const SetupPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [_shortcut, setShortcut] = useAtom(shortcutAtom);
-  const [previousShortcut] = useState(_shortcut);
+  const [previousShortcut] = useAtom(previousShortcutAtom);
   const Step = steps[currentStep];
 
   useEffect(() => {

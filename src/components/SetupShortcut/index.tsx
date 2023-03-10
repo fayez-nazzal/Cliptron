@@ -2,9 +2,9 @@ import { register_shortcut } from "../../actions/tauri";
 import { IStepProps } from "@pages/setup";
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { shortcutAtom } from "@atoms/shortcut";
 import { ShortcutInput } from "../ShortcutInput/index";
 import { useErrorIf } from "@hooks/useErrorIf";
+import { shortcutAtom } from "@pages/atoms";
 
 export const SetupShortcut = ({ onNext }: IStepProps) => {
   const [unsavedShortcut, setUnsavedShortcut] = useState<string>("");

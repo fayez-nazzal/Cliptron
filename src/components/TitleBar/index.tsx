@@ -2,10 +2,10 @@ import { Close, Setting, Clear } from "@icon-park/react";
 import { clear_history, hide_window } from "../../actions/tauri";
 import { TitleBarButton } from "../TitleBarButton/index";
 import { useAtom } from "jotai";
-import { historyAtom } from "../../atoms/history";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Icon from "@assets/icon.png";
+import { historyAtom } from "@pages/atoms";
 
 export const TitleBar = () => {
   const [history] = useAtom(historyAtom);

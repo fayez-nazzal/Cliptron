@@ -1,8 +1,5 @@
 import { IShortcutInputProps } from "./index.types";
-import { unregister } from "@tauri-apps/api/globalShortcut";
-import { useState, useEffect } from "react";
-import { useAtom } from "jotai";
-import { shortcutAtom } from "@atoms/shortcut";
+import { useState } from "react";
 import { TextInput } from "../Input/index";
 
 export const ShortcutInput = ({

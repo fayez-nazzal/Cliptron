@@ -1,15 +1,15 @@
 import { ShortcutInput } from "@components/ShortcutInput";
 import { useAtom } from "jotai";
-import { shortcutAtom } from "@atoms/shortcut";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useErrorIf } from "../../hooks/useErrorIf";
 import { register_shortcut } from "../../actions/tauri";
 import { SettingsEntry } from "@components/SettingsEntry/index";
+import { previousShortcutAtom, shortcutAtom } from "@pages/atoms";
 
 export const ShortcutSettingsEntry = () => {
   const [unsavedShortcut, setUnsavedShortcut] = useState<string>("");
   const [shortcut, setShortcut] = useAtom(shortcutAtom);
-  const [previousShortcut, setPreviousShortcut] = useState<string>(shortcut);
+  const [previousShortcut, setPreviousShortcut] = useAtom(previousShortcutAtom);
   const [isShortcutConfirmed, setIsShortcutConfirmed] =
     useState<boolean>(false);
   const { isError, handleSubmit } = useErrorIf(!isShortcutConfirmed);
