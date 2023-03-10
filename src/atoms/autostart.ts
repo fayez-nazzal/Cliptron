@@ -1,7 +1,3 @@
-import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
-export const autostartAtom = atom<boolean>(
-  typeof localStorage !== "undefined"
-    ? localStorage.getItem("auto_start") === "true"
-    : true
-);
+export const autostartAtom = atomWithStorage("auto_start", true);

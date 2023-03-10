@@ -1,3 +1,3 @@
-import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
-export const shortcutAtom = atom<string>("");
+export const shortcutAtom = atomWithStorage("shortcut", "");

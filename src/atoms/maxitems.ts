@@ -1,5 +1,3 @@
-import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
-export const maxItemsAtom = atom<number>(
-  typeof localStorage !== "undefined" ? +localStorage.getItem("max_items") : 10
-);
+export const maxItemsAtom = atomWithStorage("max_items", 10);

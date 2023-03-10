@@ -78,12 +78,11 @@ export const unregister_current_shortcut = async () => {
   localStorage.removeItem("shortcut");
 };
 
-export const get_app_theme = () => {
+export const get_system_theme = () => {
   if (
     typeof localStorage !== "undefined" &&
-    (localStorage.getItem("theme") === "dark" ||
-      (!("theme" in localStorage) &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches))
+    !("theme" in localStorage) &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
   ) {
     return "dark";
   } else {
@@ -91,8 +90,8 @@ export const get_app_theme = () => {
   }
 };
 
-export const setup_app_theme = async () => {
-  const theme = get_app_theme();
+export const setup_app_theme = async (theme?: IPersistedSettings["theme"]) => {
+  theme ??= get_system_theme();
 
   if (theme === "dark") {
     document.documentElement.classList.add("dark");
@@ -125,22 +124,20 @@ export const set_max_items = async (value: number) => {
   invoke("set_max_items", { value });
 };
 
-export const retrieve_settings = async () => {
-  set_max_items(+localStorage.getItem("max_items") || 10);
+export interface IPersistedSettings {
+  maxItems: number;
+  autoStart: boolean;
+  autoPaste: boolean;
+  theme: "dark" | "light";
+}
 
-  set_auto_start(
-    localStorage.getItem("auto_start")
-      ? localStorage.getItem("auto_start") === "true"
-      : true
-  );
-
-  set_auto_paste(
-    localStorage.getItem("auto_paste")
-    ? localStorage.getItem("auto_paste") === "true"
-    : true
-  )
-
-  setup_app_theme();
+export const retrieve_settings = async (
+  persistedSettings: IPersistedSettings
+) => {
+  set_max_items(persistedSettings.maxItems);
+  set_auto_start(persistedSettings.autoStart);
+  set_auto_paste(persistedSettings.autoPaste);
+  setup_app_theme(persistedSettings.theme);
   hideWhenNotFocused();
 
   // Disable right click

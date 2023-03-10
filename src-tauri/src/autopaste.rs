@@ -19,7 +19,7 @@ pub fn paste_from_clipboard(_last_active_window: Option<String>, _last_active_el
 
     #[cfg(target_os = "macos")]
     {
-        let last_active_window = last_active_window.unwrap().clone();
+        let last_active_window = _last_active_window.unwrap().clone();
 
         let refocus_script = format!(
             r#"tell application id "{}"

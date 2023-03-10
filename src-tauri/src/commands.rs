@@ -11,6 +11,8 @@ use std::{fs::File, io::Write, thread};
 use tauri::{GlobalShortcutManager, LogicalPosition, LogicalSize, Manager};
 
 fn on_shortcut(handle: tauri::AppHandle) {
+    println!("Shortcut pressed");
+
     let state = handle.state::<AppState>();
     let mut app_state = state.0.lock().unwrap();
 
@@ -55,6 +57,8 @@ fn on_shortcut(handle: tauri::AppHandle) {
 
 #[tauri::command(async)]
 pub fn select_clipboard_item(index: usize, handle: tauri::AppHandle) {
+    println!("Selecting item: {}", index);
+
     let state = handle.state::<AppState>();
     let mut app_state = state.0.lock().unwrap();
     let clipboard_history = (&app_state).clipboard_history.clone();
@@ -86,6 +90,8 @@ pub fn select_clipboard_item(index: usize, handle: tauri::AppHandle) {
 
 #[tauri::command]
 pub fn set_item_select_behavior(behavior: i8, handle: tauri::AppHandle) {
+    println!("Setting item select behavior: {}", behavior);
+
     let state = handle.state::<AppState>();
     let mut app_state = state.0.lock().unwrap();
     if behavior == 0 {
@@ -132,6 +138,7 @@ pub fn save_to_file(index: usize, path: String, handle: tauri::AppHandle) {
 
 #[tauri::command(async)]
 pub fn set_auto_start(value: bool, handle: tauri::AppHandle) {
+    println!("Setting auto start: {}", value);
     let state = handle.state::<AppState>();
     let app_state = state.0.lock().unwrap();
     let auto_start = &app_state.auto_start.as_ref().unwrap();

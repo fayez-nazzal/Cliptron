@@ -1,7 +1,3 @@
-import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
-export const autopasteAtom = atom<boolean>(
-  typeof localStorage !== "undefined"
-    ? localStorage.getItem("auto_paste") === "true"
-    : true
-);
+export const autopasteAtom = atomWithStorage("auto_paste", true);
