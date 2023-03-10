@@ -91,20 +91,12 @@ export const get_system_theme = () => {
   }
 };
 
-export const setup_app_theme = async (theme?: IPersistedSettings["theme"]) => {
-  theme ??= get_system_theme();
-
+export const change_dom_theme = async (theme: "light" | "dark") => {
   if (theme === "dark") {
     document.documentElement.classList.add("dark");
-    localStorage.setItem("theme", "dark");
   } else {
     document.documentElement.classList.remove("dark");
   }
-};
-
-export const set_theme = async (theme: "dark" | "light") => {
-  localStorage.setItem("theme", theme);
-  setup_app_theme();
 };
 
 export const set_auto_start = async (value: boolean) => {
@@ -138,7 +130,6 @@ export const retrieve_settings = async (
   set_max_items(persistedSettings.maxItems);
   set_auto_start(persistedSettings.autoStart);
   set_auto_paste(persistedSettings.autoPaste);
-  setup_app_theme(persistedSettings.theme);
   hideWhenNotFocused();
 
   // Disable right click in production
