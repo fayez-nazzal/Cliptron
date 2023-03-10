@@ -9,14 +9,16 @@ import { SettingsEntry } from "@components/SettingsEntry/index";
 export const ShortcutSettingsEntry = () => {
   const [unsavedShortcut, setUnsavedShortcut] = useState<string>("");
   const [shortcut, setShortcut] = useAtom(shortcutAtom);
+  const [previousShortcut, setPreviousShortcut] = useState<string>(shortcut);
   const [isShortcutConfirmed, setIsShortcutConfirmed] =
     useState<boolean>(false);
   const { isError, handleSubmit } = useErrorIf(!isShortcutConfirmed);
 
-  const onApplyClicked = () => {
+  const onApplyClicked = async () => {
+    await register_shortcut(unsavedShortcut, previousShortcut);
     setShortcut(unsavedShortcut);
-    register_shortcut(unsavedShortcut);
     setUnsavedShortcut("");
+    setPreviousShortcut(unsavedShortcut);
   };
 
   return (

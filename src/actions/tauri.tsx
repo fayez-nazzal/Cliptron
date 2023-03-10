@@ -62,20 +62,21 @@ export const save_to_file = async (index: number, is_image: boolean) => {
   }
 };
 
-export const register_shortcut = async (shortcut: string) => {
-  const previousShortcut = localStorage.getItem("shortcut");
+export const register_shortcut = async (
+  shortcut: string,
+  previousShortcut?: string
+) => {
+  previousShortcut ??= undefined;
+
+  // we need to ensure that the shortcut is not wrapped in quotes
+  // It may be wrapped because jotai does this with use atomWithStorage
+  shortcut = shortcut.replace(/\"/g, "");
 
   await invoke("register_shortcut", { shortcut, previousShortcut });
-
-  localStorage.setItem("shortcut", shortcut);
 };
 
-export const unregister_current_shortcut = async () => {
-  const shortcut = localStorage.getItem("shortcut");
-
+export const unregister_shortcut = async (shortcut: string) => {
   await invoke("unregister_shortcut", { shortcut });
-
-  localStorage.removeItem("shortcut");
 };
 
 export const get_system_theme = () => {

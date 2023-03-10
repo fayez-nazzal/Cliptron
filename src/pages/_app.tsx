@@ -12,6 +12,7 @@ import { themeAtom } from "@atoms/theme";
 import { autopasteAtom } from "@atoms/autopaste";
 import { autostartAtom } from "@atoms/autostart";
 import { maxItemsAtom } from "@atoms/maxitems";
+import { shortcutAtom } from "@atoms/shortcut";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const [theme] = useAtom(themeAtom);
   const [autoPaste] = useAtom(autopasteAtom);
   const [autoStart] = useAtom(autostartAtom);
+  const [shortcut, setShortcut] = useAtom(shortcutAtom);
 
   const onAppStart = async () => {
     retrieve_settings({
@@ -31,7 +33,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     });
 
     const wasSetUp = localStorage.getItem("set_up");
-    const shortcut = localStorage.getItem("shortcut");
 
     if (!wasSetUp || !shortcut) {
       router.push("/setup");

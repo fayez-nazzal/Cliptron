@@ -9,13 +9,15 @@ import { useErrorIf } from "@hooks/useErrorIf";
 export const SetupShortcut = ({ onNext }: IStepProps) => {
   const [unsavedShortcut, setUnsavedShortcut] = useState<string>("");
   const [shortcut, setShortcut] = useAtom(shortcutAtom);
+  const [previousShortcut, setPreviousShortcut] = useState<string>(shortcut);
   const [isShortcutConfirmed, setIsShortcutConfirmed] =
     useState<boolean>(false);
   const { isError, handleSubmit } = useErrorIf(!isShortcutConfirmed);
 
-  const onNextClicked = () => {
+  const onNextClicked = async () => {
+    await register_shortcut(unsavedShortcut, previousShortcut);
     setShortcut(unsavedShortcut);
-    register_shortcut(unsavedShortcut);
+    setPreviousShortcut(unsavedShortcut);
     !isError && onNext();
   };
 
