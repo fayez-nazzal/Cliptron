@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import {
   change_dom_theme,
   retrieve_settings,
+  set_auto_paste,
   set_auto_start,
   set_max_items,
 } from "@actions/tauri";
@@ -33,9 +34,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     change_dom_theme(theme);
     set_max_items(maxItems);
     set_auto_start(autoStart);
-    retrieve_settings({
-      autoPaste,
-    });
+    set_auto_paste(autoPaste);
 
     const wasSetUp = localStorage.getItem("set_up");
 

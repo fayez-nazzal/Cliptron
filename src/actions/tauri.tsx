@@ -122,14 +122,7 @@ export const set_max_items = async (value: number) => {
   await invoke("set_max_items", { value });
 };
 
-export interface IPersistedSettings {
-  autoPaste: boolean;
-}
-
-export const retrieve_settings = async (
-  persistedSettings: IPersistedSettings
-) => {
-  set_auto_paste(persistedSettings.autoPaste);
+export const retrieve_settings = async () => {
   hideWhenNotFocused();
 
   // Disable right click in production
