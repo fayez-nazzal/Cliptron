@@ -140,6 +140,7 @@ export const retrieve_settings = async (
   setup_app_theme(persistedSettings.theme);
   hideWhenNotFocused();
 
-  // Disable right click
-  document.addEventListener("contextmenu", (event) => event.preventDefault());
+  // Disable right click in production
+  if (process.env.NODE_ENV === "production")
+    document.addEventListener("contextmenu", (event) => event.preventDefault());
 };
