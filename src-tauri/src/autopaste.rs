@@ -17,14 +17,6 @@ pub fn paste_from_clipboard(last_active_window: String, _last_active_element: Op
         }
     }
 
-    #[cfg(target_os = "linux")]
-    {
-        Command::new("xdotool")
-            .args(&["key", "ctrl+v"])
-            .output()
-            .expect("Failed to simulate Ctrl+V key press");
-    }
-
     #[cfg(target_os = "macos")]
     {
         let last_active_window = last_active_window.clone();
@@ -50,10 +42,22 @@ pub fn paste_from_clipboard(last_active_window: String, _last_active_element: Op
 
         println!("Output: {}", output);                 
     }
+
+    #[cfg(target_os = "linux")]
+    {
+        Command::new("xdotool")
+            .args(&["key", "ctrl+v"])
+            .output()
+            .expect("Failed to simulate Ctrl+V key press");
+    }
 }
 
 // returns the active window (mac,linux) and the active UI element (linux)
 pub fn get_active_elements() -> (Option<String>, Option<String>) {
+    #[cfg(target_os = "windows")] {
+        return (None, None)
+    }
+
     #[cfg(target_os = "macos")]
     {
         let front_app_script = r#"
@@ -96,6 +100,4 @@ pub fn get_active_elements() -> (Option<String>, Option<String>) {
 
         return (Some(active_win_id), Some(active_element_name));
     }
-
-
 }
