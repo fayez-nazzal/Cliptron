@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import {
   change_dom_theme,
   retrieve_settings,
+  set_auto_start,
   set_max_items,
 } from "@actions/tauri";
 import { register_shortcut } from "@actions/tauri";
@@ -31,9 +32,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const onAppStart = async () => {
     change_dom_theme(theme);
     set_max_items(maxItems);
+    set_auto_start(autoStart);
     retrieve_settings({
       autoPaste,
-      autoStart,
     });
 
     const wasSetUp = localStorage.getItem("set_up");

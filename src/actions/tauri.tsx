@@ -107,8 +107,7 @@ export const change_dom_theme = async (theme: EAppTheme) => {
 };
 
 export const set_auto_start = async (value: boolean) => {
-  localStorage.setItem("auto_start", value.toString());
-  invoke("set_auto_start", { value });
+  await invoke("set_auto_start", { value });
 };
 
 export const set_auto_paste = async (value: boolean) => {
@@ -124,12 +123,12 @@ export const set_max_items = async (value: number) => {
 };
 
 export interface IPersistedSettings {
-  autoStart: boolean;
   autoPaste: boolean;
 }
 
-export const retrieve_settings = async (persistedSettings: IPersistedSettings) => {
-  set_auto_start(persistedSettings.autoStart);
+export const retrieve_settings = async (
+  persistedSettings: IPersistedSettings
+) => {
   set_auto_paste(persistedSettings.autoPaste);
   hideWhenNotFocused();
 
