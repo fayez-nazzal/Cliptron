@@ -11,9 +11,11 @@ import {
   save_to_file,
 } from "../actions/tauri";
 import { ActionButton } from "../components/ActionButton/index";
+import { useRouter } from "next/router";
 
 const App = () => {
   const [history, setHistory] = useAtom(historyAtom);
+  const router = useRouter();
 
   const updateHistory = async () => {
     const history = await get_history();

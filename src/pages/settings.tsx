@@ -15,13 +15,16 @@ const SettingsPage = () => {
 
   return (
     <div className="w-screen h-full gap-2 flex flex-col text-center items-center px-6">
-      <h1 className="text-2xl mt-4 mb-1">Settings</h1>
+      <h1 className="mx-4 justify-between text-2xl mt-4 mb-1">
+        Settings
+      </h1>
+
+      <ShortcutSettingsEntry />
 
       <SettingsEntry label="App Theme">
         <ThemeToggle />
       </SettingsEntry>
 
-      <ShortcutSettingsEntry />
 
       <SettingsEntry label="Launch on startup">
         <AutostartToggle />
@@ -34,6 +37,13 @@ const SettingsPage = () => {
       <SettingsEntry label="Max clipboard items">
         <MaxItemsInput />
       </SettingsEntry>
+
+      <button
+        className="bg-blue-500-light !text-lg dark:bg-blue-500-dark text-white rounded-lg h-9 flex items-center justify-center w-14 disabled:opacity-50 hover:brightness-95 active:ring"
+        onClick={onOK}
+      >
+        OK
+      </button>
     </div>
   );
 };
