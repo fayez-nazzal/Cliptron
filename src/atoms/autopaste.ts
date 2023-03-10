@@ -1,3 +1,3 @@
 import { atomWithStorage } from "jotai/utils";
 
-export const autopasteAtom = atomWithStorage("auto_paste", true);
+export const autoPasteAtom = atomWithStorage("auto_paste", true);

@@ -15,8 +15,8 @@ import { register_shortcut } from "@actions/tauri";
 import { useRouter } from "next/router";
 import { visitedAtom } from "@atoms/visited";
 import { themeAtom } from "@atoms/theme";
-import { autopasteAtom } from "@atoms/autopaste";
-import { autostartAtom } from "@atoms/autostart";
+import { autoPasteAtom } from "@atoms/autopaste";
+import { autoStartAtom } from "@atoms/autostart";
 import { maxItemsAtom } from "@atoms/maxitems";
 import { shortcutAtom } from "@atoms/shortcut";
 
@@ -26,8 +26,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const [visitedRoutes, setVisitedRoutes] = useAtom(visitedAtom);
   const [maxItems] = useAtom(maxItemsAtom);
   const [theme] = useAtom(themeAtom);
-  const [autoPaste] = useAtom(autopasteAtom);
-  const [autoStart] = useAtom(autostartAtom);
+  const [autoPaste] = useAtom(autoPasteAtom);
+  const [autoStart] = useAtom(autoStartAtom);
   const [shortcut] = useAtom(shortcutAtom);
 
   const onAppStart = async () => {

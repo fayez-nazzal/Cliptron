@@ -1,16 +1,15 @@
 import { Checkbox } from "@components/Checkbox";
 import { useAtom } from "jotai";
-import { autostartAtom } from "../../atoms/autostart";
 import { set_auto_paste } from "../../actions/tauri";
-import { autopasteAtom } from "@atoms/autopaste";
+import { autoPasteAtom } from "@atoms/autopaste";
 
 export const AutoPasteToggle = () => {
-  const [autoPaste, setAutoPaste] = useAtom(autopasteAtom);
+  const [autoPaste, setAutoPaste] = useAtom(autoPasteAtom);
 
-  const toggleAutostart = () => {
+  const toggleAutoPaste = () => {
     setAutoPaste(!autoPaste);
     set_auto_paste(!autoPaste);
   };
 
-  return <Checkbox checked={autoPaste} onChange={toggleAutostart} />;
+  return <Checkbox checked={autoPaste} onChange={toggleAutoPaste} />;
 };

@@ -1,3 +1,3 @@
 import { atomWithStorage } from "jotai/utils";
 
-export const autostartAtom = atomWithStorage("auto_start", true);
+export const autoStartAtom = atomWithStorage("auto_start", true);
