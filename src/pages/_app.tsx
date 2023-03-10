@@ -6,10 +6,11 @@ import "@fontsource/open-sans";
 import { useEffect, useState } from "react";
 import {
   change_dom_theme,
-  retrieve_settings,
+  set_context_menu,
   set_auto_paste,
   set_auto_start,
   set_max_items,
+  hideWhenNotFocused,
 } from "@actions/tauri";
 import { register_shortcut } from "@actions/tauri";
 import { useRouter } from "next/router";
@@ -32,9 +33,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   const onAppStart = async () => {
     change_dom_theme(theme);
-    set_max_items(maxItems);
-    set_auto_start(autoStart);
-    set_auto_paste(autoPaste);
+    await set_max_items(maxItems);
+    await set_auto_start(autoStart);
+    await set_auto_paste(autoPaste);
+    await set_context_menu();
+    hideWhenNotFocused();
 
     const wasSetUp = localStorage.getItem("set_up");
 

@@ -96,7 +96,7 @@ export const get_system_theme = () => {
   }
 };
 
-export const change_dom_theme = async (theme: EAppTheme) => {
+export const change_dom_theme = (theme: EAppTheme) => {
   if (theme === EAppTheme.Dark) {
     document.documentElement.classList.remove("light");
     document.documentElement.classList.add("dark");
@@ -122,9 +122,7 @@ export const set_max_items = async (value: number) => {
   await invoke("set_max_items", { value });
 };
 
-export const retrieve_settings = async () => {
-  hideWhenNotFocused();
-
+export const set_context_menu = async () => {
   // Disable right click in production
   if (process.env.NODE_ENV === "production")
     document.addEventListener("contextmenu", (event) => event.preventDefault());
