@@ -1,21 +1,33 @@
 use crate::{
-    emit_event, img::imagedata_to_image, master::ensure_max_items, state::AppState, Event,
+    autopaste::{get_active_elements, paste_from_clipboard},
+    emit_event,
+    img::imagedata_to_image,
+    master::ensure_max_items,
+    state::{AppState, ItemSelectBehavior},
+    Event,
 };
 use mouse_position::mouse_position::Mouse;
 use std::{fs::File, io::Write, thread};
-use tauri::{GlobalShortcutManager, Manager, PhysicalPosition};
+use tauri::{GlobalShortcutManager, LogicalPosition, LogicalSize, Manager};
 
 fn on_shortcut(handle: tauri::AppHandle) {
+    let state = handle.state::<AppState>();
+    let mut app_state = state.0.lock().unwrap();
+
+    let (active_window, active_element) = get_active_elements();
+
+    app_state.last_active_window = active_window;
+    app_state.last_active_element = active_element;
+
     let mouse_position = get_mouse_position();
-
     let app_window = handle.get_window("main").unwrap();
+    let scale_factor = app_window.scale_factor().unwrap();
+    let window_size: LogicalSize<u32> = app_window.inner_size().unwrap().to_logical(scale_factor);
 
-    let window_size = app_window.inner_size().unwrap();
+    let x = mouse_position.0 as i32 - (window_size.width / 2) as i32;
+    let y = mouse_position.1 as i32;
 
-    let result = app_window.set_position(tauri::Position::Physical(PhysicalPosition::new(
-        mouse_position.0 as i32 - (window_size.width / 2) as i32,
-        mouse_position.1 as i32,
-    )));
+    let result = app_window.set_position(LogicalPosition::new(x, y));
 
     if result.is_err() {
         eprintln!("Error: {}", result.err().unwrap());
@@ -28,19 +40,25 @@ fn on_shortcut(handle: tauri::AppHandle) {
         eprintln!("Error: {}", result.err().unwrap());
         return;
     }
-    
+
     app_window.show().unwrap();
     app_window.set_focus().unwrap();
+    let result = app_window.set_focus();
+
+    if result.is_err() {
+        eprintln!("Error: {}", result.err().unwrap());
+        return;
+    }
 
     emit_event(Event::Shortcut, &handle);
 }
 
 #[tauri::command(async)]
-pub fn recopy_at_index(index: usize, handle: tauri::AppHandle) {
+pub fn select_clipboard_item(index: usize, handle: tauri::AppHandle) {
     let state = handle.state::<AppState>();
     let mut app_state = state.0.lock().unwrap();
     let clipboard_history = (&app_state).clipboard_history.clone();
-
+    let item_select_behavior = (&app_state).item_select_behavior.clone();
     let copied_content = &clipboard_history[index];
 
     if copied_content.image.is_some() {
@@ -55,21 +73,25 @@ pub fn recopy_at_index(index: usize, handle: tauri::AppHandle) {
             .expect("Failed to set text");
     }
 
-    let timeout = std::time::Duration::from_millis(100);
+    let timeout = std::time::Duration::from_millis(20);
     thread::sleep(timeout);
 
-    #[cfg(target_os = "windows")]
-    {
-        use winapi::um::winuser::{keybd_event, KEYEVENTF_EXTENDEDKEY, VK_CONTROL};
-        keybd_event(VK_CONTROL as u8, 0, 0, 0);
-        keybd_event(86, 0, KEYEVENTF_EXTENDEDKEY, 0);
-        keybd_event(
-            86,
-            0,
-            KEYEVENTF_EXTENDEDKEY | winapi::um::winuser::KEYEVENTF_KEYUP,
-            0,
-        );
-        keybd_event(VK_CONTROL as u8, 0, winapi::um::winuser::KEYEVENTF_KEYUP, 0);
+    let last_active_window = app_state.last_active_window.clone();
+    let last_active_element = app_state.last_active_element.clone();
+
+    if item_select_behavior == ItemSelectBehavior::AutoPaste {
+        paste_from_clipboard(last_active_window, last_active_element);
+    }
+}
+
+#[tauri::command]
+pub fn set_item_select_behavior(behavior: i8, handle: tauri::AppHandle) {
+    let state = handle.state::<AppState>();
+    let mut app_state = state.0.lock().unwrap();
+    if behavior == 0 {
+        app_state.item_select_behavior = ItemSelectBehavior::Copy;
+    } else {
+        app_state.item_select_behavior = ItemSelectBehavior::AutoPaste;
     }
 }
 
@@ -112,13 +134,26 @@ pub fn save_to_file(index: usize, path: String, handle: tauri::AppHandle) {
 pub fn set_auto_start(value: bool, handle: tauri::AppHandle) {
     let state = handle.state::<AppState>();
     let app_state = state.0.lock().unwrap();
-    let auto_start = &app_state.auto_start;
+    let auto_start = &app_state.auto_start.as_ref().unwrap();
+    let is_auto_start_enabled = auto_start.is_enabled();
 
-    if auto_start.is_some() {
-        if value {
-            auto_start.as_ref().unwrap().enable().unwrap();
-        } else {
-            auto_start.as_ref().unwrap().disable().unwrap();
+    if is_auto_start_enabled.is_err() {
+        eprintln!("Error calling auto_start.is_enabled");
+    }
+
+    let is_auto_start_enabled = is_auto_start_enabled.unwrap();
+
+    if value && !is_auto_start_enabled {
+        let result = auto_start.enable();
+
+        if result.is_err() {
+            println!("Error enabling auto start");
+        }
+    } else if is_auto_start_enabled {
+        let result = auto_start.disable();
+
+        if result.is_err() {
+            println!("Error disabling auto start");
         }
     }
 }
@@ -195,7 +230,6 @@ pub fn unregister_shortcut(shortcut: &str, handle: tauri::AppHandle) {
 
 #[tauri::command(async)]
 pub fn hide_window(handle: tauri::AppHandle) {
-    println!("hiding");
     let app_window = handle.get_window("main").unwrap();
     let result = app_window.set_always_on_top(false);
 

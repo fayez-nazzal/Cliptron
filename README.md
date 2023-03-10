@@ -22,6 +22,13 @@ A tiny app to manage your clipboard history, works for Windows, MacOS, and Linux
     </li>
 </ul>
 
+## Requirements for running on Linux
+For Linux users, you need `x11-utils` and `xdotool` packages installed on your system.
+```bash
+sudo apt-get install x11-utils
+sudo apt-get install xdotool
+```
+
 ## Installation
 Check the [Release section](https://github.com/fayez-nazzal/Cliptron/releases) for getting pre-built packages for your operating system.
 
@@ -30,41 +37,6 @@ Check the [Release section](https://github.com/fayez-nazzal/Cliptron/releases) f
 - For **MacOS**, there's a `.dmg` Image file availale in the release section.
 
 - For **Windows**, an installer package `.msi` is available.
-
-### Linux - i3wm users
-
-You can call this app with your custom shortcut right away, no additional configuration required (no need for floating window configs).
-
-### Linux - AwesomeWM users
-
-Add this config to `awful.rules.rules` in your `~/.config/rc.lua` file
-```lua
--- A function to add a titlebar for a window
-function titlebar_add_with_settings(c)
-     awful.titlebar.add(c, { modkey = modkey, height = 16, font = "Terminus 6" })
- end
- ...
- -- {{{ Rules
- -- Rules to apply to new clients (through the "manage" signal).
- awful.rules.rules = {
- ...
-     { rule_any = {type = { "normal", "dialog" }}, 
-       properties = { titlebars_enabled = false }
-     },
-     { rule = {},
-       -- Add titlebar to all windows except cliptron
-       except_any = { class = { "Alacritty", "Cliptron", "cliptron" } },
-                     callback = titlebar_add_with_settings
-     },
-     { rule = { class = "Cliptron" },
-       properites = {
-               floating = true,
-               border_width = 0,
-       }
-      }
- ...
- },
-```
 
 ## Building From Source
 ### Build Requirements

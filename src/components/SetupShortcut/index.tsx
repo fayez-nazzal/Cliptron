@@ -35,6 +35,7 @@ export const SetupShortcut = ({ onNext }: IStepProps) => {
           isError={isError}
           unsavedShortcut={unsavedShortcut}
           setUnsavedShortcut={setUnsavedShortcut}
+          className="!min-h-[42px]"
           autoFocus
         />
 

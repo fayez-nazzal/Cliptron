@@ -36,8 +36,8 @@ export const get_history = async () => {
   return history;
 };
 
-export const recopy_at_index = async (index: number) => {
-  invoke("recopy_at_index", { index });
+export const select_clipboard_item = async (index: number) => {
+  invoke("select_clipboard_item", { index });
 
   hide_window();
 };
@@ -112,6 +112,14 @@ export const set_auto_start = async (value: boolean) => {
   invoke("set_auto_start", { value });
 };
 
+export const set_auto_paste = async (value: boolean) => {
+  localStorage.setItem("auto_paste", value.toString());
+
+  let numberValue = value ? 1 : 0;
+
+  invoke("set_item_select_behavior", { behavior: numberValue });
+};
+
 export const set_max_items = async (value: number) => {
   localStorage.setItem("max_items", value.toString());
   invoke("set_max_items", { value });
@@ -125,6 +133,12 @@ export const retrieve_settings = async () => {
       ? localStorage.getItem("auto_start") === "true"
       : true
   );
+
+  set_auto_paste(
+    localStorage.getItem("auto_paste")
+    ? localStorage.getItem("auto_paste") === "true"
+    : true
+  )
 
   setup_app_theme();
   hideWhenNotFocused();

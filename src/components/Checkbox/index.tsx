@@ -15,7 +15,7 @@ export const Checkbox = ({ checked, onChange }: ICheckboxProps) => {
   }, [checked]);
 
   return (
-    <div className="flex items-center relative w-7 h-7 group">
+    <div className="flex items-center relative w-6 h-6 group">
       <input
         type="checkbox"
         checked={checked}

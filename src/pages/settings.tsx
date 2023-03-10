@@ -4,6 +4,7 @@ import { AutostartToggle } from "../components/AutostartToggle/index";
 import { MaxItemsInput } from "@components/MaxItemsInput/index";
 import { ShortcutSettingsEntry } from "../components/ShortcutSettingsEntry/index";
 import { useRouter } from "next/router";
+import { AutoPasteToggle } from "@components/AutoPasteToggle";
 
 const SettingsPage = () => {
   const router = useRouter();
@@ -14,30 +15,35 @@ const SettingsPage = () => {
 
   return (
     <div className="w-screen h-full gap-2 flex flex-col text-center items-center px-6">
-      <h1 className="text-2xl mt-4 mb-1">Settings</h1>
+      <h1 className="mx-4 justify-between text-2xl mt-4 mb-1">
+        Settings
+      </h1>
+
+      <ShortcutSettingsEntry />
 
       <SettingsEntry label="App Theme">
         <ThemeToggle />
       </SettingsEntry>
 
+
       <SettingsEntry label="Launch on startup">
         <AutostartToggle />
+      </SettingsEntry>
+
+      <SettingsEntry label="Auto Paste">
+        <AutoPasteToggle />
       </SettingsEntry>
 
       <SettingsEntry label="Max clipboard items">
         <MaxItemsInput />
       </SettingsEntry>
 
-      <ShortcutSettingsEntry />
-
-      <div className="flex w-full justify-center mt-auto mb-3 gap-2 mt-1">
-        <button
-          className="bg-blue-500-light dark:bg-blue-500-dark text-white rounded-lg p-2 flex-[0.4] hover:brightness-95 active:ring"
-          onClick={onOK}
-        >
-          OK
-        </button>
-      </div>
+      <button
+        className="bg-blue-500-light !text-lg dark:bg-blue-500-dark text-white rounded-lg h-9 flex items-center justify-center w-14 disabled:opacity-50 hover:brightness-95 active:ring"
+        onClick={onOK}
+      >
+        OK
+      </button>
     </div>
   );
 };
