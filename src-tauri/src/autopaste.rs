@@ -1,6 +1,6 @@
 use std::process::Command;
 
-pub fn paste_from_clipboard(last_active_window: String, _last_active_element: Option<String>) {
+pub fn paste_from_clipboard(_last_active_window: Option<String>, _last_active_element: Option<String>) {
     #[cfg(target_os = "windows")]
     {
         use winapi::um::winuser::{keybd_event, KEYEVENTF_EXTENDEDKEY, VK_CONTROL};
@@ -19,7 +19,7 @@ pub fn paste_from_clipboard(last_active_window: String, _last_active_element: Op
 
     #[cfg(target_os = "macos")]
     {
-        let last_active_window = last_active_window.clone();
+        let last_active_window = last_active_window.unwrap().clone();
 
         let refocus_script = format!(
             r#"tell application id "{}"
