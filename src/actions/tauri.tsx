@@ -144,4 +144,5 @@ export const retrieve_settings = async () => {
   hideWhenNotFocused();
 
   // Disable right click
+  document.addEventListener("contextmenu", (event) => event.preventDefault());
 };
