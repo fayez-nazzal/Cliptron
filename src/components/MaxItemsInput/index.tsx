@@ -8,7 +8,6 @@ export const MaxItemsInput = () => {
 
   const onChange = ({ target: { value } }) => {
     if (!+value) return;
-
     setMaxItems(+value);
     set_max_items(+value);
   };

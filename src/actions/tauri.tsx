@@ -79,23 +79,30 @@ export const unregister_shortcut = async (shortcut: string) => {
   await invoke("unregister_shortcut", { shortcut });
 };
 
+export enum EAppTheme {
+  Light,
+  Dark,
+}
+
 export const get_system_theme = () => {
   if (
     typeof localStorage !== "undefined" &&
     !("theme" in localStorage) &&
     window.matchMedia("(prefers-color-scheme: dark)").matches
   ) {
-    return "dark";
+    return EAppTheme.Dark;
   } else {
-    return "light";
+    return EAppTheme.Light;
   }
 };
 
-export const change_dom_theme = async (theme: "light" | "dark") => {
-  if (theme === "dark") {
+export const change_dom_theme = async (theme: EAppTheme) => {
+  if (theme === EAppTheme.Dark) {
+    document.documentElement.classList.remove("light");
     document.documentElement.classList.add("dark");
   } else {
     document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
   }
 };
 
@@ -113,21 +120,15 @@ export const set_auto_paste = async (value: boolean) => {
 };
 
 export const set_max_items = async (value: number) => {
-  localStorage.setItem("max_items", value.toString());
-  invoke("set_max_items", { value });
+  await invoke("set_max_items", { value });
 };
 
 export interface IPersistedSettings {
-  maxItems: number;
   autoStart: boolean;
   autoPaste: boolean;
-  theme: "dark" | "light";
 }
 
-export const retrieve_settings = async (
-  persistedSettings: IPersistedSettings
-) => {
-  set_max_items(persistedSettings.maxItems);
+export const retrieve_settings = async (persistedSettings: IPersistedSettings) => {
   set_auto_start(persistedSettings.autoStart);
   set_auto_paste(persistedSettings.autoPaste);
   hideWhenNotFocused();

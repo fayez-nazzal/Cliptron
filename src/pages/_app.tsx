@@ -4,7 +4,11 @@ import { Layout } from "../components/Layout";
 import "../global.css";
 import "@fontsource/open-sans";
 import { useEffect, useState } from "react";
-import { change_dom_theme, retrieve_settings } from "@actions/tauri";
+import {
+  change_dom_theme,
+  retrieve_settings,
+  set_max_items,
+} from "@actions/tauri";
 import { register_shortcut } from "@actions/tauri";
 import { useRouter } from "next/router";
 import { visitedAtom } from "@atoms/visited";
@@ -22,16 +26,14 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const [theme] = useAtom(themeAtom);
   const [autoPaste] = useAtom(autopasteAtom);
   const [autoStart] = useAtom(autostartAtom);
-  const [shortcut, setShortcut] = useAtom(shortcutAtom);
+  const [shortcut] = useAtom(shortcutAtom);
 
   const onAppStart = async () => {
     change_dom_theme(theme);
-
+    set_max_items(maxItems);
     retrieve_settings({
-      maxItems,
       autoPaste,
       autoStart,
-      theme,
     });
 
     const wasSetUp = localStorage.getItem("set_up");
