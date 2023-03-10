@@ -212,7 +212,6 @@ pub fn unregister_shortcut(shortcut: &str, handle: tauri::AppHandle) {
 
 #[tauri::command(async)]
 pub fn hide_window(handle: tauri::AppHandle) {
-    println!("hiding");
     let app_window = handle.get_window("main").unwrap();
     let result = app_window.set_always_on_top(false);
 

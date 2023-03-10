@@ -38,8 +38,6 @@ pub fn paste_from_clipboard(last_active_window: String, _last_active_element: Op
             last_active_window
         );
 
-        println!("{}", refocus_script);
-
         let output = Command::new("osascript")
             .arg("-e")
             .arg(refocus_script)
@@ -95,9 +93,6 @@ pub fn get_active_elements() -> (Option<String>, Option<String>) {
             .expect("Failed to get active element name");
         let active_element_name =
             String::from_utf8_lossy(&active_element_name_output.stdout).to_string();
-
-        println!("Active window id: {}", active_win_id.to_string());
-        println!("Active element name: {}", active_element_name.to_string());
 
         return (Some(active_win_id), Some(active_element_name));
     }
