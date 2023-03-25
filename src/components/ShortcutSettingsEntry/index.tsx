@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useErrorIf } from "../../hooks/useErrorIf";
 import { register_shortcut } from "../../actions/tauri";
 import { SettingsEntry } from "@components/SettingsEntry/index";
-import { previousShortcutAtom, shortcutAtom } from "@pages/atoms";
+import { previousShortcutAtom, shortcutAtom } from "@atoms";
 
 export const ShortcutSettingsEntry = () => {
   const [unsavedShortcut, setUnsavedShortcut] = useState<string>("");

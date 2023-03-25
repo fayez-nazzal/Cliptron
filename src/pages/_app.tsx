@@ -21,7 +21,7 @@ import {
   shortcutAtom,
   themeAtom,
   visitedAtom,
-} from "./atoms";
+} from "../atoms";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();

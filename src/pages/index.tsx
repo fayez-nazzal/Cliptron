@@ -10,7 +10,7 @@ import {
 } from "../actions/tauri";
 import { ActionButton } from "../components/ActionButton/index";
 import { useRouter } from "next/router";
-import { historyAtom } from "./atoms";
+import { historyAtom } from "../atoms";
 
 const App = () => {
   const [history, setHistory] = useAtom(historyAtom);

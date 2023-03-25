@@ -5,7 +5,7 @@ import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Icon from "@assets/icon.png";
-import { historyAtom } from "@pages/atoms";
+import { historyAtom } from "@atoms";
 
 export const TitleBar = () => {
   const [history] = useAtom(historyAtom);

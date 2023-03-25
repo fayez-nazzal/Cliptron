@@ -1,5 +1,5 @@
 import { Checkbox } from "@components/Checkbox";
-import { autoPasteAtom } from "@pages/atoms";
+import { autoPasteAtom } from "@atoms";
 import { useAtom } from "jotai";
 import { set_auto_paste } from "../../actions/tauri";
 

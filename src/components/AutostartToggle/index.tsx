@@ -1,5 +1,5 @@
 import { Checkbox } from "@components/Checkbox";
-import { autoStartAtom } from "@pages/atoms";
+import { autoStartAtom } from "@atoms";
 import { useAtom } from "jotai";
 import { set_auto_start } from "../../actions/tauri";
 

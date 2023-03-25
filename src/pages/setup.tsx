@@ -4,7 +4,7 @@ import { TestShortcut } from "../components/TestShortcut/index";
 import { show_window } from "@actions/tauri";
 import { unregister_shortcut } from "../actions/tauri";
 import { useAtom } from "jotai";
-import { previousShortcutAtom, shortcutAtom } from "./atoms";
+import { previousShortcutAtom, shortcutAtom } from "../atoms";
 
 export interface IStepProps {
   onNext: () => void;

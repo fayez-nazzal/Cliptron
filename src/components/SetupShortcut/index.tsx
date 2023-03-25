@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useAtom } from "jotai";
 import { ShortcutInput } from "../ShortcutInput/index";
 import { useErrorIf } from "@hooks/useErrorIf";
-import { shortcutAtom } from "@pages/atoms";
+import { shortcutAtom } from "@atoms";
 
 export const SetupShortcut = ({ onNext }: IStepProps) => {
   const [unsavedShortcut, setUnsavedShortcut] = useState<string>("");
