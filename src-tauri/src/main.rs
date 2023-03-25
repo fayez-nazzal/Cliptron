@@ -28,6 +28,8 @@ use tauri::AppHandle;
 use tauri::Manager;
 use tray::init_system_tray;
 use tray::on_system_tray_event;
+#[cfg(target_os = "macos")]
+use tauri::ActivationPolicy;
 
 mod commands;
 mod img;
@@ -60,6 +62,9 @@ fn emit_event(event: Event, handle: &AppHandle) {
 }
 
 fn setup(app: &mut App) -> std::result::Result<(), Box<(dyn StdError + 'static)>> {
+    #[cfg(target_os = "macos")]
+    app.set_activation_policy(ActivationPolicy::Accessory);
+    
     let handle = app.handle();
     let handle_clone = handle.clone();
 
