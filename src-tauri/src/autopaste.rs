@@ -24,7 +24,7 @@ pub fn paste_from_clipboard(_last_active_window: Option<String>, _last_active_el
         let refocus_script = format!(
             r#"tell application id "{}"
             activate
-            delay .02
+            delay .1
             tell application "System Events" to keystroke "v" using command down
         end tell"#,
             last_active_window
