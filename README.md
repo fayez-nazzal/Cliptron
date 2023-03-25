@@ -75,7 +75,6 @@ This project is written entirely using [Rust](https://www.rust-lang.org/) & [Nex
 ## TODO List
 - Auto Paste feature.
 - Global shortcut without a requirement to hide the window.
-- For MacOS, Global shortcuts without keeping the window icon on the dock.
 
 ## Contribution
 You are welcome to join 👋
