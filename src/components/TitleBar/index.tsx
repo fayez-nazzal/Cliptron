@@ -24,11 +24,21 @@ export const TitleBar = () => {
     clear_history();
   };
 
+  const onDragBegin = () => {
+    (window as any).dragging = true;
+  };
+
+  const onDragEnd = () => {
+    (window as any).dragging = false;
+  };
+
   return (
     <div
       data-tauri-drag-region
       className="flex items-center flex-row-reverse p-2 border-b-2 dark:border-gray300-dark h-12 w-full absolute"
       id="titlebar-close"
+      onMouseDown={onDragBegin}
+      onMouseUp={onDragEnd}
     >
       <TitleBarButton
         icon={Close}

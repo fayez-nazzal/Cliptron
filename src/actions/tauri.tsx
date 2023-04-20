@@ -6,7 +6,9 @@ export const clear_history = async () => {
 };
 
 export const hide_window = async () => {
-  await invoke("hide_window")
+  if (!(window as any).dragging) {
+    await invoke("hide_window");
+  }
 };
 
 let listening = false;
